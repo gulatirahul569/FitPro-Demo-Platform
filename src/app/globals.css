@@ -1,15 +1,32 @@
 @import "tailwindcss";
 
+/* Brand tokens (black and white theme) */
+@theme {
+  --color-ink: #111111;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f9fafb;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  background: #ffffff;
-  color: #111111;
+  background: var(--color-surface);
+  color: var(--color-ink);
 }
 
+::selection {
+  background: #111111;
+  color: #ffffff;
+}
+
+/* Visible keyboard focus */
+:focus-visible {
+  outline: 2px solid #111111;
+  outline-offset: 2px;
+}
 /* =========================
    Existing animations
 ========================= */
@@ -62,6 +79,7 @@ body {
 
 /* =========================
    Video marquee animation
+   (kept for later phases, the video library is hidden for now)
 ========================= */
 
 @keyframes video-marquee-scroll {
@@ -77,7 +95,7 @@ body {
 .video-marquee-wrap {
   width: 100%;
   overflow: hidden;
-  background: #f9fafb;
+  background: var(--color-surface-muted);
 }
 
 .video-marquee-track {
@@ -94,6 +112,7 @@ body {
   padding-right: 1.5rem;
 }
 
+/* Pause scrolling when the user hovers over the cards */
 .video-marquee-wrap:hover .video-marquee-track {
   animation-play-state: paused;
 }
@@ -103,17 +122,6 @@ body {
     padding-left: 3rem;
     padding-right: 3rem;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .video-marquee-track {
-    animation: none;
-  }
-}
-
-/* Pause scrolling when the user hovers over the cards */
-.video-marquee-wrap:hover .video-marquee-track {
-  animation-play-state: paused;
 }
 
 /* Accessibility: stop non-essential movement for users who request it */

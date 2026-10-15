@@ -16,15 +16,23 @@ import {
   PlayCircle,
   Building2,
   ChevronDown,
+  Briefcase,
 } from "lucide-react";
+import { BRAND } from "@/lib/brand";
+import { FEATURES } from "@/lib/features";
 
-const navLinks = [
+const allLinks = [
   { href: "/", label: "Home" },
+  { href: "/packages", label: "Packages" },
   { href: "/#our-story", label: "About" },
-  { href: "/trainers", label: "Trainers" },
-  { href: "/videos", label: "Videos" },
-  { href: "/gyms", label: "Gyms" },
+  { href: "/contact", label: "Contact" },
+  // Hidden by feature flags (code kept for later phases)
+  { href: "/trainers", label: "Trainers", flag: "publicTrainerDirectory" },
+  { href: "/videos", label: "Videos", flag: "publicVideoLibrary" },
+  { href: "/gyms", label: "Gyms", flag: "gyms" },
 ];
+
+const navLinks = allLinks.filter((link) => !link.flag || FEATURES[link.flag]);
 
 export default function Navbar() {
   const { data: session, status } = useSession();
@@ -43,14 +51,20 @@ export default function Navbar() {
   const isTrainer = role === "trainer";
   const isAdmin = role === "admin";
   const isGymOwner = role === "gym-owner";
+  const isSales = role === "sales";
 
   const isDashboard =
     pathname.startsWith("/user/") ||
     pathname.startsWith("/trainer/") ||
     pathname.startsWith("/admin/") ||
+    pathname.startsWith("/sales/") ||
     pathname.startsWith("/gym-owner/");
 
-  const showBecomeTrainer = !isLoggedIn || isNormalUser;
+  const showBecomeTrainer =
+    FEATURES.becomeTrainer && (!isLoggedIn || isNormalUser);
+
+  // Book a Demo is for visitors and customers, not staff
+  const showBookDemo = !isLoggedIn || isNormalUser;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,9 +90,23 @@ export default function Navbar() {
     });
   };
 
+  const closeMenu = () => setProfileMenu(false);
+
+  const bookDemoButton = (
+    <Link
+      href="/book-demo"
+      className={`rounded-full px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
+        isGlassTransparent
+          ? "bg-white text-black hover:bg-white/90"
+          : "bg-black text-white hover:bg-gray-800"
+      }`}
+    >
+      Book a Demo
+    </Link>
+  );
+
   return (
-    // Mobile now uses BottomNav instead of a top header — hidden entirely
-    // below md:. Everything below this point is desktop-only and unchanged.
+    // Mobile uses BottomNav instead of a top header, so this is desktop-only.
     <header
       className={`z-50 hidden transition-colors duration-300 md:block ${
         isDashboard
@@ -108,13 +136,11 @@ export default function Navbar() {
               isGlassTransparent ? "text-white" : "text-black"
             }`}
           >
-            FIT
+            {BRAND.nameParts[0]}
             <span
-              className={
-                isGlassTransparent ? "text-white/50" : "text-gray-500"
-              }
+              className={isGlassTransparent ? "text-white/50" : "text-gray-500"}
             >
-              PRO
+              {BRAND.nameParts[1]}
             </span>
           </span>
         </Link>
@@ -146,27 +172,31 @@ export default function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           {!isLoggedIn && (
             <>
-              <Link
-                href="/become-trainer"
-                className={`rounded-full px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
-                  isGlassTransparent
-                    ? "bg-white text-black hover:bg-white/90"
-                    : "bg-black text-white hover:bg-gray-800"
-                }`}
-              >
-                Become a Trainer
-              </Link>
+              {showBecomeTrainer && (
+                <Link
+                  href="/become-trainer"
+                  className={`rounded-full px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
+                    isGlassTransparent
+                      ? "bg-white text-black hover:bg-white/90"
+                      : "bg-black text-white hover:bg-gray-800"
+                  }`}
+                >
+                  Become a Trainer
+                </Link>
+              )}
 
               <Link
                 href="/login"
-                className={`rounded-full px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
+                className={`rounded-full border px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
                   isGlassTransparent
-                    ? "bg-white text-black hover:bg-white/90"
-                    : "bg-black text-white hover:bg-gray-800"
+                    ? "border-white/50 text-white hover:bg-white hover:text-black"
+                    : "border-black text-black hover:bg-black hover:text-white"
                 }`}
               >
                 Login
               </Link>
+
+              {bookDemoButton}
             </>
           )}
 
@@ -184,6 +214,8 @@ export default function Navbar() {
                   Become a Trainer
                 </Link>
               )}
+
+              {showBookDemo && bookDemoButton}
 
               <div className="relative">
                 <button
@@ -223,16 +255,11 @@ export default function Navbar() {
 
                 {profileMenu && (
                   <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setProfileMenu(false)}
-                    />
+                    <div className="fixed inset-0 z-40" onClick={closeMenu} />
 
                     <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
                       <div className="border-b border-gray-100 px-4 py-4">
-                        <p className="font-semibold text-black">
-                          {user?.name}
-                        </p>
+                        <p className="font-semibold text-black">{user?.name}</p>
 
                         <p className="text-sm text-gray-500">{user?.email}</p>
 
@@ -250,34 +277,31 @@ export default function Navbar() {
                               href="/user/profile"
                               icon={User}
                               label="My Profile"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/user/bookings"
                               icon={Calendar}
                               label="My Bookings"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/user/training"
                               icon={BookOpen}
                               label="My Training"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
                             <ProfileMenuItem
                               href="/user/videos"
                               icon={PlayCircle}
                               label="Session Videos"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/user/settings"
                               icon={Settings}
                               label="Settings"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
                           </>
                         )}
@@ -288,53 +312,59 @@ export default function Navbar() {
                               href="/trainer/profile"
                               icon={User}
                               label="My Profile"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/trainer/dashboard"
                               icon={LayoutDashboard}
                               label="Trainer Dashboard"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/trainer/settings"
                               icon={Settings}
                               label="Settings"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
                           </>
                         )}
 
-                        {isGymOwner && (
+                        {isSales && (
+                          <>
+                            <ProfileMenuItem
+                              href="/sales/dashboard"
+                              icon={Briefcase}
+                              label="Sales Dashboard"
+                              onClick={closeMenu}
+                            />
+                          </>
+                        )}
+
+                        {FEATURES.gyms && isGymOwner && (
                           <>
                             <ProfileMenuItem
                               href="/gym-owner/dashboard"
                               icon={Building2}
                               label="Gym Owner Dashboard"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/gym-owner/profile"
                               icon={Building2}
                               label="Gym Profile"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/gym-owner/trainers"
                               icon={Calendar}
                               label="Trainer Requests"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/gym-owner/settings"
                               icon={Settings}
                               label="Settings"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
                           </>
                         )}
@@ -345,21 +375,19 @@ export default function Navbar() {
                               href="/admin/profile"
                               icon={User}
                               label="My Profile"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/admin/dashboard"
                               icon={ShieldCheck}
                               label="Admin Dashboard"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
-
                             <ProfileMenuItem
                               href="/admin/settings"
                               icon={Settings}
                               label="Settings"
-                              onClick={() => setProfileMenu(false)}
+                              onClick={closeMenu}
                             />
                           </>
                         )}

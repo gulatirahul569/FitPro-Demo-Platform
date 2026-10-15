@@ -1,6 +1,9 @@
+"use client";
 import Link from "next/link";
 import { ArrowUpRight, Dumbbell } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
+import { BRAND } from "@/lib/brand";
+import { FEATURES } from "@/lib/features";
 
 function InstagramIcon({ size = 24, ...props }) {
   return (
@@ -50,18 +53,33 @@ function FacebookIcon({ size = 24, ...props }) {
   );
 }
 
-const platformLinks = [
-  { href: "/trainers", label: "Find Trainers" },
-  { href: "/videos", label: "Fitness Videos" },
-  { href: "/gyms", label: "Partner Gyms" },
+const allExploreLinks = [
+  { href: "/packages", label: "Packages" },
+  { href: "/book-demo", label: "Book a Demo" },
+  { href: "/#how-it-works", label: "How It Works" },
+  // Hidden by feature flags (code kept for later phases)
+  { href: "/trainers", label: "Find Trainers", flag: "publicTrainerDirectory" },
+  { href: "/videos", label: "Fitness Videos", flag: "publicVideoLibrary" },
+  { href: "/gyms", label: "Partner Gyms", flag: "gyms" },
 ];
+
+const exploreLinks = allExploreLinks.filter(
+  (link) => !link.flag || FEATURES[link.flag]
+);
 
 const companyLinks = [
-  { href: "/#our-story", label: "About FitPro" },
+  { href: "/#our-story", label: `About ${BRAND.name}` },
   { href: "/contact", label: "Contact Us" },
-  { href: "/faq", label: "Frequently Asked Questions" },
+  { href: "/faq", label: "FAQs" },
 ];
 
+const legalLinks = [
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/cookies", label: "Cookies" },
+];
+
+// Replace these with the client's real social pages
 const socialLinks = [
   {
     icon: InstagramIcon,
@@ -95,33 +113,49 @@ export default function Footer() {
                 <Dumbbell size={19} />
               </div>
 
-              <h2 className="text-xl font-black tracking-tight">FITPRO</h2>
+              <h2 className="text-xl font-black tracking-tight">
+                {BRAND.name.toUpperCase()}
+              </h2>
             </Link>
 
             <p className="max-w-sm text-sm leading-6 text-white/50">
-              Find trusted trainers, explore fitness content, and build a
-              routine that helps you become stronger every day.
+              Personalized home fitness coaching with a trainer matched to your
+              goals and location. Book a demo and see the difference.
             </p>
 
             <Link
-              href="/become-trainer"
-              className="group mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-white/60"
+              href="/book-demo"
+             className="group mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-white/80"
             >
-              Become a trainer
+              Book a Demo
 
               <ArrowUpRight
                 size={16}
                 className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
               />
             </Link>
+
+            {FEATURES.becomeTrainer && (
+              <Link
+                href="/become-trainer"
+                className="group mt-4 flex w-fit items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-white/60"
+              >
+                Become a trainer
+
+                <ArrowUpRight
+                  size={16}
+                  className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                />
+              </Link>
+            )}
           </div>
 
-          {/* Platform */}
+          {/* Explore */}
           <div className="border-t border-white/10 pt-7 md:border-0 md:pt-0">
-            <h3 className="mb-5 text-sm font-bold text-white">Platform</h3>
+            <h3 className="mb-5 text-sm font-bold text-white">Explore</h3>
 
             <nav className="flex flex-col gap-3 text-sm text-white/50">
-              {platformLinks.map((link) => (
+              {exploreLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -155,8 +189,8 @@ export default function Footer() {
             <h3 className="mb-5 text-sm font-bold text-white">Follow us</h3>
 
             <p className="mb-5 max-w-xs text-sm leading-6 text-white/50">
-              Follow FitPro for training motivation, workout tips, and fitness
-              updates.
+              Follow {BRAND.name} for training motivation, workout tips, and
+              fitness updates.
             </p>
 
             <div className="flex gap-3">
@@ -169,7 +203,7 @@ export default function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`Follow FitPro on ${social.label}`}
+                    aria-label={`Follow ${BRAND.name} on ${social.label}`}
                     className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/60 transition-all duration-300 hover:-translate-y-1 hover:border-white hover:bg-white hover:text-black"
                   >
                     <Icon size={17} />
@@ -182,33 +216,22 @@ export default function Footer() {
       </Reveal>
 
       {/* Bottom footer */}
-      <div className="border-t border-white/10 ">
+      <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-6 text-sm text-white/45 md:flex-row md:justify-between md:px-12">
           <p className="text-center">
-            © {new Date().getFullYear()} FitPro. All rights reserved.
+            © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 mb-12 lg:mb-2">
-            <Link
-              href="/privacy"
-              className="transition-colors duration-200 hover:text-white"
-            >
-              Privacy
-            </Link>
-
-            <Link
-              href="/terms"
-              className="transition-colors duration-200 hover:text-white"
-            >
-              Terms
-            </Link>
-
-            <Link
-              href="/cookies"
-              className="transition-colors duration-200 hover:text-white"
-            >
-              Cookies
-            </Link>
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+            {legalLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition-colors duration-200 hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

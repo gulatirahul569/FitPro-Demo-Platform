@@ -8,19 +8,31 @@ import Testimonials from "@/components/home/Testimonials";
 import BecomeTrainer from "@/components/home/BecomeTrainer";
 import FinalCta from "@/components/home/FinalCta";
 import OurStory from "@/components/home/Ourstory";
+import { FEATURES } from "@/lib/features";
+import PackagesPreview from "@/components/home/PackagesPreview";
 
 export default function Home() {
   return (
     <main>
       <Hero />
-      <FeaturedTrainers />
+
+      {/* Hidden for Phase 1 (flip the flag in lib/features.js to bring back) */}
+      {FEATURES.publicTrainerDirectory && <FeaturedTrainers />}
+      <PackagesPreview />
+
       <OurStory />
+
+
       <HowItWorks />
-      <VideoSection />
+
+      {FEATURES.publicVideoLibrary && <VideoSection />}
+
       <WhyChooseUs />
       <Testimonials />
-      <BecomeTrainer />
-      <Categories />
+
+      {FEATURES.becomeTrainer && <BecomeTrainer />}
+      {FEATURES.homeCategories && <Categories />}
+
       <FinalCta />
     </main>
   );

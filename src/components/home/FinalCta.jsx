@@ -1,17 +1,16 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Package, Sparkles } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
-
 
 export default function FinalCta() {
   return (
-    <section className="bg-gray-50 px-6 pt-0 py-12 sm:px-6 sm:py-16 md:px-8 md:py-20 lg:px-12">
-      <div className="mx-auto grid max-w-7xl lg:px-6 grid-cols-1 items-center gap-8 sm:gap-10 md:grid-cols-2 md:gap-12 lg:gap-16">
+    <section className="bg-gray-50 px-6 py-12 pt-0 sm:px-6 sm:py-16 md:px-8 md:py-20 lg:px-12">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 sm:gap-10 md:grid-cols-2 md:gap-12 lg:gap-16 lg:px-6">
         {/* ================= CONTENT / LEFT ================= */}
         <Reveal>
           <div className="flex flex-col items-start">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-black/10 bg-gray-50 px-3.5 py-2 text-xs font-semibold text-black sm:mb-5 sm:px-4">
-              <Sparkles size={14} className="sm:size-[15]" />
+              <Sparkles size={15} />
               Your next step starts here
             </div>
 
@@ -22,21 +21,29 @@ export default function FinalCta() {
             </h2>
 
             <p className="mt-5 max-w-md text-sm leading-6 text-black/60 sm:mt-6 sm:text-base sm:leading-7 md:text-lg">
-              Find a trainer, book a session, and build the routine that helps
-              you get stronger, healthier, and more confident.
+              Request a demo, and our team will contact you to agree a time and
+              match you with a suitable trainer at your home.
             </p>
 
-            <div className="mt-7 sm:mt-8 md:mt-9">
+            <div className="mt-7 flex w-full flex-col gap-3 sm:mt-8 sm:w-auto sm:flex-row md:mt-9">
               <Link
-                href="/trainers"
+                href="/book-demo"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-black px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-gray-800 hover:shadow-xl sm:w-auto sm:px-8 sm:py-4"
               >
-                Get Started
+                Request Your Demo
 
                 <ArrowRight
                   size={18}
                   className="transition-transform duration-300 group-hover:translate-x-1"
                 />
+              </Link>
+
+              <Link
+                href="/packages"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-black/15 bg-white px-6 py-3.5 text-sm font-bold text-black transition-all duration-300 hover:-translate-y-1 hover:border-black hover:bg-black hover:text-white sm:w-auto sm:px-8 sm:py-4"
+              >
+                <Package size={18} />
+                View Packages
               </Link>
             </div>
           </div>

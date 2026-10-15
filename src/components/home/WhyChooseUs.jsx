@@ -1,53 +1,54 @@
 import {
-  BadgeCheck,
-  CalendarClock,
-  ChartNoAxesCombined,
+  CalendarCheck,
   ClipboardCheck,
-  Dumbbell,
+  Home,
+  MapPin,
+  MessageCircle,
   ShieldCheck,
   Sparkles,
   UserRoundCheck,
 } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
+import { BRAND } from "@/lib/brand";
 
-
+// Keep these to claims the client can back up.
+// Add "Certified Trainers" or "Verified Profiles" back only once the client confirms them.
 const benefits = [
   {
-    title: "Certified Trainers",
-    icon: BadgeCheck,
-  },
-  {
-    title: "Personalized Training",
-    icon: ClipboardCheck,
-  },
-  {
-    title: "Flexible Scheduling",
-    icon: CalendarClock,
-  },
-  {
-    title: "Verified Profiles",
+    title: "Trainer matched to your needs",
     icon: UserRoundCheck,
   },
   {
-    title: "Expert Guidance",
-    icon: Dumbbell,
+    title: "Matched to your area",
+    icon: MapPin,
   },
   {
-    title: "Progress Tracking",
-    icon: ChartNoAxesCombined,
+    title: "Appointments confirmed with you",
+    icon: CalendarCheck,
+  },
+  {
+    title: "Training at your home",
+    icon: Home,
+  },
+  {
+    title: "Personalized plans",
+    icon: ClipboardCheck,
+  },
+  {
+    title: "Support through onboarding",
+    icon: MessageCircle,
   },
 ];
 
-
 export default function WhyChooseUs() {
   return (
-    <section className="bg-gray-50 px-6  sm:px-6 sm:py-16 md:px-8 md:py-12 lg:px-12">
-      <div className="mx-auto grid max-w-7xl lg:px-6 grid-cols-1 items-center gap-8 sm:gap-10 md:grid-cols-2 md:gap-12 lg:gap-16">
+    <section className="bg-gray-50 px-6 sm:px-6 sm:py-16 md:px-8 md:py-12 lg:px-12">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 sm:gap-10 md:grid-cols-2 md:gap-12 lg:gap-16 lg:px-6">
         {/* ================= BENEFITS / LEFT ================= */}
         <Reveal>
           <div className="flex flex-col justify-center">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-black/40 sm:text-xs sm:mb-4">
-              The FitPro Difference
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-black/40 sm:mb-4 sm:text-xs">
+              The {BRAND.name} Difference
             </p>
 
             <h2 className="text-2xl font-black uppercase leading-tight text-black sm:text-3xl md:text-4xl lg:text-5xl">
@@ -57,9 +58,9 @@ export default function WhyChooseUs() {
             </h2>
 
             <p className="mt-5 max-w-xl text-sm leading-6 text-black/60 sm:mt-6 sm:text-base sm:leading-7">
-              FitPro brings trusted trainers, flexible workouts, and practical
-              support into one simple fitness experience built around your
-              goals.
+              Our team matches you with a suitable trainer, coordinates the
+              demo time with you, and supports you from your first session
+              onwards.
             </p>
 
             {/* Benefit grid */}
@@ -76,7 +77,7 @@ export default function WhyChooseUs() {
                     }}
                   >
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-black transition-all duration-300 group-hover:scale-110 group-hover:bg-black group-hover:text-white sm:h-10 sm:w-10">
-                      <Icon size={17} strokeWidth={2} className="sm:size-[19]" />
+                      <Icon size={18} strokeWidth={2} />
                     </div>
 
                     <span className="text-xs font-semibold text-black sm:text-sm">
@@ -91,7 +92,7 @@ export default function WhyChooseUs() {
             <div className="mt-6 border-t border-black/10 pt-5 sm:mt-8 sm:pt-6 md:mt-10 md:pt-7">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white sm:h-11 sm:w-11 md:h-12 md:w-12">
-                  <Sparkles size={17} className="sm:size-[19]" />
+                  <Sparkles size={18} />
                 </div>
 
                 <div>
@@ -100,7 +101,7 @@ export default function WhyChooseUs() {
                   </p>
 
                   <p className="mt-1 text-xs text-black/40 sm:text-sm">
-                    Find the right coach, build a plan, and keep moving forward.
+                    Try a demo first, then choose the package that fits you.
                   </p>
                 </div>
               </div>
@@ -137,24 +138,24 @@ export default function WhyChooseUs() {
                 </p>
 
                 <h3 className="max-w-sm text-lg font-bold leading-tight sm:text-xl md:text-2xl lg:text-3xl">
-                  Find the right guidance for every goal.
+                  The right trainer for your goals, at your door.
                 </h3>
               </div>
             </div>
 
-            {/* Floating verified card */}
-            <div className="absolute -bottom-4 left-3 right-3 flex items-center gap-3 rounded-xl border border-black/5 bg-white p-3.5 shadow-lg sm:-bottom-5 sm:left-4 sm:right-auto sm:w-64 sm:p-4 sm:rounded-2xl">
+            {/* Floating card */}
+            <div className="absolute -bottom-4 left-3 right-3 flex items-center gap-3 rounded-xl border border-black/5 bg-white p-3.5 shadow-lg sm:-bottom-5 sm:left-4 sm:right-auto sm:w-72 sm:rounded-2xl sm:p-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black text-white sm:h-11 sm:w-11">
-                <ShieldCheck size={18} className="sm:size-[21]" />
+                <ShieldCheck size={20} />
               </div>
 
               <div>
                 <p className="text-xs font-bold text-black sm:text-sm">
-                  Verified Experts
+                  Confirmed with you first
                 </p>
 
                 <p className="mt-0.5 text-[10px] text-black/50 sm:text-xs">
-                  Guidance you can trust.
+                  No demo is booked without your agreement.
                 </p>
               </div>
             </div>
