@@ -1,0 +1,121 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
+import {
+  LayoutDashboard,
+  User,
+  Calendar,
+  Dumbbell,
+  Settings,
+  ArrowLeft,
+  LogOut,
+  Menu,
+  X,
+  PlayCircle, // add this
+} from "lucide-react";
+import { useState } from "react";
+const navItems = [
+  { href: "/user/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/user/profile", label: "My Profile", icon: User },
+  { href: "/user/bookings", label: "My Bookings", icon: Calendar },
+  { href: "/user/training", label: "My Training", icon: Dumbbell },
+  { href: "/user/videos", label: "Session Videos", icon: PlayCircle }, // new
+  { href: "/user/settings", label: "Settings", icon: Settings },
+];
+
+export default function UserLayout({ children }) {
+  const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const handleLogout = async () => {
+    setSidebarOpen(false);
+
+    await signOut({
+      callbackUrl: "/",
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Mobile overlay — stops above the fixed BottomNav (bottom-16,
+          matching its own md: breakpoint) and sits below it in
+          z-index, so the tab bar stays visible and tappable. */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-x-0 top-0 bottom-16 z-30 bg-black/50 md:bottom-0 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside
+        className={`fixed lg:sticky top-0 bottom-16 md:bottom-0 lg:h-screen left-0 w-64 bg-white border-r border-gray-200 flex flex-col z-40 transition-transform duration-300 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        <div className="h-20 flex items-center justify-between px-6 border-b border-gray-100">
+          <Link href="/" className="text-xl font-extrabold text-black">
+            FIT<span className="text-gray-400">PRO</span>
+          </Link>
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-gray-500">
+            <X size={22} />
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-black text-white"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-black"
+                }`}
+              >
+                <Icon size={18} />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Back to Website (desktop) / Logout (mobile) */}
+        <div className="p-4 border-t border-gray-100">
+          <Link
+            href="/"
+            className="hidden items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-black transition-colors lg:flex"
+          >
+            <ArrowLeft size={18} />
+            Back to Website
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2 px-4 py-3 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors lg:hidden"
+          >
+            <LogOut size={18} />
+            Logout
+          </button>
+        </div>
+      </aside>
+
+      <div className="flex-1 min-w-0">
+        <div className="lg:hidden sticky top-0 z-20 h-16 bg-white border-b border-gray-200 flex items-center px-4">
+          <button onClick={() => setSidebarOpen(true)} className="text-gray-700">
+            <Menu size={24} />
+          </button>
+          <span className="ml-4 font-semibold text-black">My Account</span>
+        </div>
+
+        <main className="p-6 md:p-8">{children}</main>
+      </div>
+    </div>
+  );
+}
