@@ -1,68 +1,32 @@
-"use client";
-
 import PackageCard from "./PackageCard";
 import { DEMO_PACKAGES, MAIN_PACKAGES } from "@/lib/packages";
 
 export default function PackagesView() {
   return (
     <>
-      {/* DEMO PACKAGES */}
-      <section
-        id="demo-packages"
-        className="scroll-mt-28 pt-6"
-      >
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-black/40">
-            Start Here
-          </p>
+      <section id="demo-packages" className="scroll-mt-28">
+        <h2 className="text-2xl font-bold text-white">Demo Packages</h2>
+        <p className="mt-1 text-sm text-white/60">
+          Try before you commit. Experience our training style with a 1 session
+          demo.
+        </p>
 
-          <h2 className="mt-2 text-2xl font-bold text-black md:text-3xl">
-            Demo Packages
-          </h2>
-
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60">
-            Try before you commit with a single session. Experience our
-            training style and find the right program for your goals.
-          </p>
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {DEMO_PACKAGES.map((pkg) => (
-            <PackageCard
-              key={pkg.slug}
-              pkg={pkg}
-              isDemo
-            />
+            <PackageCard key={pkg.slug} pkg={pkg} isDemo />
           ))}
         </div>
       </section>
 
-      {/* MAIN PACKAGES */}
-      <section
-        id="main-packages"
-        className="scroll-mt-28 pt-14 md:pt-20"
-      >
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-black/40">
-            Long-Term Training
-          </p>
+      <section id="main-packages" className="scroll-mt-28 pt-16">
+        <h2 className="text-2xl font-bold text-white">Our Main Packages</h2>
+        <p className="mt-1 text-sm text-white/60">
+          Long-term programs for real results.
+        </p>
 
-          <h2 className="mt-2 text-2xl font-bold text-black md:text-3xl">
-            Main Packages
-          </h2>
-
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-black/60">
-            Structured training programs designed for long-term results,
-            with personal coaching and benefits tailored to your goals.
-          </p>
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 " >
           {MAIN_PACKAGES.map((pkg) => (
-            <PackageCard
-              key={pkg.slug}
-              pkg={pkg}
-            />
+            <PackageCard key={pkg.slug} pkg={pkg} />
           ))}
         </div>
       </section>

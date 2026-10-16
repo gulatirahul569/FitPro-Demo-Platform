@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
@@ -39,7 +39,6 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const [profileMenu, setProfileMenu] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
 
   const isLoggedIn = status === "authenticated";
   const user = session?.user;
@@ -66,21 +65,8 @@ export default function Navbar() {
   // Book a Demo is for visitors and customers, not staff
   const showBookDemo = !isLoggedIn || isNormalUser;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-    };
-
-    handleScroll();
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  const isGlassTransparent = pathname === "/" && !isDashboard && !isScrolled;
+  // Every public page uses the same dark navbar. Dashboards keep the white one.
+  const isDarkPage = !isDashboard;
 
   const handleLogout = async () => {
     setProfileMenu(false);
@@ -96,8 +82,8 @@ export default function Navbar() {
     <Link
       href="/book-demo"
       className={`rounded-full px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
-        isGlassTransparent
-          ? "bg-white text-black hover:bg-white/90"
+        isDarkPage
+          ? "bg-white text-black hover:bg-gray-100"
           : "bg-black text-white hover:bg-gray-800"
       }`}
     >
@@ -111,20 +97,16 @@ export default function Navbar() {
       className={`z-50 hidden transition-colors duration-300 md:block ${
         isDashboard
           ? "relative border-b border-gray-200 bg-white"
-          : `fixed inset-x-0 top-0 ${
-              isGlassTransparent
-                ? "border-b border-white/10 bg-transparent"
-                : "border-b border-white/20 bg-white/70 shadow-sm shadow-black/5 backdrop-blur-xl"
-            }`
+          : "fixed inset-x-0 top-0 border-b border-white/10 bg-[#070d17]"
       }`}
     >
-      <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-6">
+      <div className="mx-auto flex h-18 max-w-full items-center justify-between px-12">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2">
           <div
             className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 ease-out group-hover:rotate-12 ${
-              isGlassTransparent
-                ? "border border-white/20 bg-white/10 text-white backdrop-blur-md"
+              isDarkPage
+                ? "border border-white/20 bg-white/10 text-white"
                 : "bg-black text-white"
             }`}
           >
@@ -133,13 +115,11 @@ export default function Navbar() {
 
           <span
             className={`text-3xl font-extrabold tracking-tight transition-colors duration-300 ${
-              isGlassTransparent ? "text-white" : "text-black"
+              isDarkPage ? "text-white" : "text-black"
             }`}
           >
             {BRAND.nameParts[0]}
-            <span
-              className={isGlassTransparent ? "text-white/50" : "text-gray-500"}
-            >
+            <span className={isDarkPage ? "text-white/50" : "text-gray-500"}>
               {BRAND.nameParts[1]}
             </span>
           </span>
@@ -152,7 +132,7 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               className={`group relative text-lg font-medium transition-colors duration-300 ${
-                isGlassTransparent
+                isDarkPage
                   ? "text-white hover:text-white"
                   : "text-gray-700 hover:text-black"
               }`}
@@ -161,7 +141,7 @@ export default function Navbar() {
 
               <span
                 className={`absolute -bottom-1 left-0 h-[1.5px] w-0 transition-all duration-300 ease-out group-hover:w-full ${
-                  isGlassTransparent ? "bg-white" : "bg-black"
+                  isDarkPage ? "bg-white" : "bg-black"
                 }`}
               />
             </Link>
@@ -176,8 +156,8 @@ export default function Navbar() {
                 <Link
                   href="/become-trainer"
                   className={`rounded-full px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
-                    isGlassTransparent
-                      ? "bg-white text-black hover:bg-white/90"
+                    isDarkPage
+                      ? "bg-white text-black hover:bg-gray-100"
                       : "bg-black text-white hover:bg-gray-800"
                   }`}
                 >
@@ -188,7 +168,7 @@ export default function Navbar() {
               <Link
                 href="/login"
                 className={`rounded-full border px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
-                  isGlassTransparent
+                  isDarkPage
                     ? "border-white/50 text-white hover:bg-white hover:text-black"
                     : "border-black text-black hover:bg-black hover:text-white"
                 }`}
@@ -206,8 +186,8 @@ export default function Navbar() {
                 <Link
                   href="/become-trainer"
                   className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
-                    isGlassTransparent
-                      ? "border border-white/40 text-white backdrop-blur-md hover:bg-white hover:text-black"
+                    isDarkPage
+                      ? "border border-white/40 text-white hover:bg-white hover:text-black"
                       : "border border-black text-black hover:bg-black hover:text-white"
                   }`}
                 >
@@ -222,16 +202,14 @@ export default function Navbar() {
                   type="button"
                   onClick={() => setProfileMenu((current) => !current)}
                   className={`flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 transition-colors duration-300 ${
-                    isGlassTransparent
-                      ? "border border-white/30 bg-white/10 backdrop-blur-md hover:border-white/50"
+                    isDarkPage
+                      ? "border border-white/30 bg-white/10 hover:border-white/50"
                       : "border border-gray-200 hover:border-gray-300"
                   }`}
                 >
                   <div
                     className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
-                      isGlassTransparent
-                        ? "bg-white text-black"
-                        : "bg-black text-white"
+                      isDarkPage ? "bg-white text-black" : "bg-black text-white"
                     }`}
                   >
                     {firstName?.charAt(0)?.toUpperCase()}
@@ -239,7 +217,7 @@ export default function Navbar() {
 
                   <span
                     className={`text-sm font-medium ${
-                      isGlassTransparent ? "text-white" : "text-black"
+                      isDarkPage ? "text-white" : "text-black"
                     }`}
                   >
                     {firstName}
@@ -249,7 +227,7 @@ export default function Navbar() {
                     size={16}
                     className={`transition-transform duration-200 ${
                       profileMenu ? "rotate-180" : ""
-                    } ${isGlassTransparent ? "text-white/80" : "text-gray-500"}`}
+                    } ${isDarkPage ? "text-white/80" : "text-gray-500"}`}
                   />
                 </button>
 
@@ -273,122 +251,40 @@ export default function Navbar() {
                       <div className="py-2">
                         {isNormalUser && (
                           <>
-                            <ProfileMenuItem
-                              href="/user/profile"
-                              icon={User}
-                              label="My Profile"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/user/bookings"
-                              icon={Calendar}
-                              label="My Bookings"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/user/training"
-                              icon={BookOpen}
-                              label="My Training"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/user/videos"
-                              icon={PlayCircle}
-                              label="Session Videos"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/user/settings"
-                              icon={Settings}
-                              label="Settings"
-                              onClick={closeMenu}
-                            />
+                            <ProfileMenuItem href="/user/profile" icon={User} label="My Profile" onClick={closeMenu} />
+                            <ProfileMenuItem href="/user/bookings" icon={Calendar} label="My Bookings" onClick={closeMenu} />
+                            <ProfileMenuItem href="/user/training" icon={BookOpen} label="My Training" onClick={closeMenu} />
+                            <ProfileMenuItem href="/user/videos" icon={PlayCircle} label="Session Videos" onClick={closeMenu} />
+                            <ProfileMenuItem href="/user/settings" icon={Settings} label="Settings" onClick={closeMenu} />
                           </>
                         )}
 
                         {isTrainer && (
                           <>
-                            <ProfileMenuItem
-                              href="/trainer/profile"
-                              icon={User}
-                              label="My Profile"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/trainer/dashboard"
-                              icon={LayoutDashboard}
-                              label="Trainer Dashboard"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/trainer/settings"
-                              icon={Settings}
-                              label="Settings"
-                              onClick={closeMenu}
-                            />
+                            <ProfileMenuItem href="/trainer/profile" icon={User} label="My Profile" onClick={closeMenu} />
+                            <ProfileMenuItem href="/trainer/dashboard" icon={LayoutDashboard} label="Trainer Dashboard" onClick={closeMenu} />
+                            <ProfileMenuItem href="/trainer/settings" icon={Settings} label="Settings" onClick={closeMenu} />
                           </>
                         )}
 
                         {isSales && (
-                          <>
-                            <ProfileMenuItem
-                              href="/sales/dashboard"
-                              icon={Briefcase}
-                              label="Sales Dashboard"
-                              onClick={closeMenu}
-                            />
-                          </>
+                          <ProfileMenuItem href="/sales/dashboard" icon={Briefcase} label="Sales Dashboard" onClick={closeMenu} />
                         )}
 
                         {FEATURES.gyms && isGymOwner && (
                           <>
-                            <ProfileMenuItem
-                              href="/gym-owner/dashboard"
-                              icon={Building2}
-                              label="Gym Owner Dashboard"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/gym-owner/profile"
-                              icon={Building2}
-                              label="Gym Profile"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/gym-owner/trainers"
-                              icon={Calendar}
-                              label="Trainer Requests"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/gym-owner/settings"
-                              icon={Settings}
-                              label="Settings"
-                              onClick={closeMenu}
-                            />
+                            <ProfileMenuItem href="/gym-owner/dashboard" icon={Building2} label="Gym Owner Dashboard" onClick={closeMenu} />
+                            <ProfileMenuItem href="/gym-owner/profile" icon={Building2} label="Gym Profile" onClick={closeMenu} />
+                            <ProfileMenuItem href="/gym-owner/trainers" icon={Calendar} label="Trainer Requests" onClick={closeMenu} />
+                            <ProfileMenuItem href="/gym-owner/settings" icon={Settings} label="Settings" onClick={closeMenu} />
                           </>
                         )}
 
                         {isAdmin && (
                           <>
-                            <ProfileMenuItem
-                              href="/admin/profile"
-                              icon={User}
-                              label="My Profile"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/admin/dashboard"
-                              icon={ShieldCheck}
-                              label="Admin Dashboard"
-                              onClick={closeMenu}
-                            />
-                            <ProfileMenuItem
-                              href="/admin/settings"
-                              icon={Settings}
-                              label="Settings"
-                              onClick={closeMenu}
-                            />
+                            <ProfileMenuItem href="/admin/profile" icon={User} label="My Profile" onClick={closeMenu} />
+                            <ProfileMenuItem href="/admin/dashboard" icon={ShieldCheck} label="Admin Dashboard" onClick={closeMenu} />
+                            <ProfileMenuItem href="/admin/settings" icon={Settings} label="Settings" onClick={closeMenu} />
                           </>
                         )}
                       </div>

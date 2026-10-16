@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ArrowRight } from "lucide-react";
 
 export const metadata = { title: "Request Received" };
 
@@ -15,35 +15,35 @@ export default async function DemoRequestSuccessPage({ searchParams }) {
   const id = typeof params?.id === "string" ? params.id : "";
 
   return (
-    <main className="bg-gray-50 px-6 pb-20 pt-12 md:pt-32">
+    <main className="min-h-screen bg-[#070d17] px-6 pb-20 pt-12 text-white md:pt-32">
       <div className="mx-auto max-w-xl text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-black text-white">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white text-black">
           <CheckCircle2 size={32} />
         </div>
 
-        <h1 className="mt-6 text-3xl font-black text-black">Request Submitted!</h1>
-        <p className="mt-2 text-sm text-black/60">
+        <h1 className="mt-6 text-3xl font-black">Request Submitted!</h1>
+        <p className="mt-2 text-sm text-white/60">
           Your request has been received. Our team will contact you shortly.
         </p>
         {id && (
-          <p className="mt-3 text-xs text-black/50">
-            Reference: <span className="font-semibold text-black">{id}</span>
+          <p className="mt-3 text-xs text-white/50">
+            Reference: <span className="font-semibold text-white">{id}</span>
           </p>
         )}
 
-        <div className="mt-8 rounded-2xl border border-black/10 bg-white p-6 text-left shadow-sm">
-          <h2 className="font-bold text-black">What happens next?</h2>
+        <div className="mt-8 rounded-2xl border border-white/10 bg-[#0f1a2b] p-6 text-left shadow-xl shadow-black/30">
+          <h2 className="font-bold text-white">What happens next?</h2>
           <ol className="mt-4 space-y-4">
             {steps.map((step, i) => (
-              <li key={step} className="flex gap-3 text-sm text-black/70">
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black text-xs font-bold text-white">
+              <li key={step} className="flex gap-3 text-sm text-white/70">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-black">
                   {i + 1}
                 </span>
                 {step}
               </li>
             ))}
           </ol>
-          <p className="mt-5 border-t border-black/10 pt-4 text-xs text-black/50">
+          <p className="mt-5 border-t border-white/10 pt-4 text-xs text-white/50">
             Your request is not a confirmed booking until a trainer and time are
             agreed with you.
           </p>
@@ -51,9 +51,13 @@ export default async function DemoRequestSuccessPage({ searchParams }) {
 
         <Link
           href="/"
-          className="mt-8 inline-block rounded-full bg-black px-8 py-3.5 text-sm font-bold text-white hover:bg-gray-800"
+          className="group mt-8 inline-flex items-center gap-2 rounded-full bg-white px-8 py-3.5 text-sm font-bold text-black transition-colors hover:bg-gray-100"
         >
           Back to Home
+          <ArrowRight
+            size={16}
+            className="transition-transform duration-300 group-hover:translate-x-1"
+          />
         </Link>
       </div>
     </main>

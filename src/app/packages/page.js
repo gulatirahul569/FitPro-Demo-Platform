@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import PackagesView from "@/components/packages/PackagesView";
+import PackageImage from "@/components/packages/PackageImage";
 import {
   PACKAGES_BANNER_IMAGE,
   PACKAGES_BANNER_IMAGE_MOBILE,
+  PACKAGES_CTA_IMAGE,
 } from "@/lib/packages";
-import PackagesView from "@/components/packages/PackagesView";
 
 export const metadata = {
   title: "Packages",
@@ -14,9 +16,9 @@ export const metadata = {
 
 export default function PackagesPage() {
   return (
-    <main className="bg-gray-50 pb-20">
-      {/* TOP BANNER */}
-      <section className="relative isolate overflow-hidden border-b border-black/5 bg-gray-100 text-black">
+    <main className="bg-[#070d17] pb-20 text-white">
+      {/* ================= TOP BANNER ================= */}
+      <section className="relative isolate overflow-hidden border-b border-white/10 bg-gradient-to-br from-[#0f1a2b] via-[#0a1220] to-black">
         {PACKAGES_BANNER_IMAGE && (
           <picture>
             {PACKAGES_BANNER_IMAGE_MOBILE && (
@@ -25,76 +27,83 @@ export default function PackagesPage() {
                 srcSet={PACKAGES_BANNER_IMAGE_MOBILE}
               />
             )}
-
-            <img
+            <PackageImage
               src={PACKAGES_BANNER_IMAGE}
-              alt="FitPro personal training"
-              className="absolute inset-0 -z-10 h-full w-full object-cover object-center"
+              alt="Personal training"
+              width={1600}
+              priority
+              className="absolute inset-0 -z-10 h-full w-full object-contain object-right"
             />
           </picture>
         )}
 
-        <div className="absolute inset-0 -z-0 bg-gradient-to-r from-black/40 via-black/30 to-black/20" />
+        {/* Dark fade keeps the text readable on any photo */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20" />
 
-        <div className="relative z-10 mx-auto max-w-7xl px-6 pb-14 pt-14 md:px-12 md:pb-20 md:pt-40">
-          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white sm:text-xs">
-            FitPro Programs
-          </p>
-
-          <h1 className="text-4xl text-white font-bold leading-tight sm:text-5xl md:text-6xl">
+        <div className="relative z-10 mx-auto max-w-full px-6 pb-12 pt-16 md:px-12 md:pb-16 md:pt-40">
+          <h1 className="text-4xl font-bold leading-tight sm:text-5xl md:text-8xl">
             Our Packages
           </h1>
 
-          <p className="mt-4 max-w-xl text-sm leading-6 text-white sm:text-base sm:leading-7">
-            Start with a single demo session or choose a complete training
-            program. Find the right fitness plan for your goals.
+          <p className="mt-4 max-w-xl text-sm leading-6 text-white/75 sm:text-base sm:leading-7">
+            Flexible options for every goal. Choose a demo package to try, or
+            explore our full programs for long-term results.
           </p>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-7 flex flex-wrap gap-3">
             <Link
               href="#demo-packages"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-black px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-800 hover:shadow-lg"
+              className="rounded-full bg-white px-6 py-3 text-sm font-bold text-black transition-colors hover:bg-white"
             >
-              Explore Demo Packages
-              <ArrowRight
-                size={18}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
+              Demo Packages
             </Link>
-
             <Link
               href="#main-packages"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-black/20 bg-white/90 px-6 py-3.5 text-sm font-bold text-black transition-colors hover:bg-white"
+              className="rounded-full border border-white/25 bg-white/5 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-white/10"
             >
-              View Full Programs
-              <ChevronDown size={17} />
+              Main Packages
             </Link>
           </div>
         </div>
       </section>
 
-      {/* BOTH PACKAGE TYPES ON THE SAME PAGE */}
-      <div className="mx-auto max-w-7xl px-6 pt-10 md:px-12">
+      {/* ================= PACKAGES ================= */}
+      <div className="mx-auto max-w-full px-6 pt-12 md:px-12">
         <PackagesView />
 
-        {/* CLOSING CTA */}
-        <section className="mt-16 rounded-2xl border border-black/10 bg-white p-8 text-center shadow-sm md:p-12">
-          <h2 className="text-2xl font-bold text-black md:text-3xl">
-            Ready to get started?
-          </h2>
+        {/* ================= CLOSING BANNER ================= */}
+        <section className="relative isolate mt-16 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0f1a2b] to-black">
+          {PACKAGES_CTA_IMAGE && (
+            <PackageImage
+              src={PACKAGES_CTA_IMAGE}
+              alt=""
+              width={1400}
+              className="absolute inset-0 -z-10 h-full w-full object-cover object-center"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
 
-          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-black/60">
-            Book a demo session and let our team help you find the right
-            training program.
-          </p>
+          <div className="relative z-10 p-8 md:p-14">
+            <h2 className="text-3xl font-bold md:text-4xl">
+              Stronger. Healthier.{" "}
+              <span className="text-white">Happier.</span>
+            </h2>
+            <p className="mt-2 max-w-md text-sm leading-6 text-white/70">
+              Your goals. Our support. Real results. Book a demo and let our
+              team help you find the right program.
+            </p>
 
-          <Link
-            href="/book-demo"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-black px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-gray-800"
-          >
-            Book a Demo
-            <ArrowRight size={17} />
-          </Link>
+            <Link
+              href="/book-demo"
+              className="group mt-6 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-bold text-black transition-colors hover:bg-white"
+            >
+              Book a Demo
+              <ArrowRight
+                size={17}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
+          </div>
         </section>
       </div>
     </main>

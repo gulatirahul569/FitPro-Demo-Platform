@@ -66,7 +66,7 @@ export default async function UserTrainingPage() {
       label: "Pending",
       icon: Hourglass,
       className:
-        "bg-amber-50 text-amber-700 border-amber-100",
+        "bg-white text-white border-white",
     },
     confirmed: {
       label: "Confirmed",

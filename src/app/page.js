@@ -13,15 +13,15 @@ import PackagesPreview from "@/components/home/PackagesPreview";
 
 export default function Home() {
   return (
-    <main>
+    <main className="min-h-screen bg-[#070d17] text-white">
       <Hero />
 
       {/* Hidden for Phase 1 (flip the flag in lib/features.js to bring back) */}
       {FEATURES.publicTrainerDirectory && <FeaturedTrainers />}
-      <PackagesPreview />
 
       <OurStory />
 
+      <PackagesPreview />
 
       <HowItWorks />
 

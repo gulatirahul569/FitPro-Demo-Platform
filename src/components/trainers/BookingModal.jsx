@@ -209,21 +209,21 @@ export default function BookingModal({
                   .
                 </p>
 
-                <div className="rounded-xl bg-amber-50 border border-amber-100 p-4 mb-6 text-left">
+                <div className="rounded-xl bg-white border border-white p-4 mb-6 text-left">
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
                       <Hourglass
                         size={18}
-                        className="text-amber-600"
+                        className="text-white"
                       />
                     </div>
 
                     <div>
-                      <p className="text-sm font-semibold text-amber-800 mb-1">
+                      <p className="text-sm font-semibold text-white mb-1">
                         Waiting for Trainer Approval
                       </p>
 
-                      <p className="text-xs text-amber-700 leading-5">
+                      <p className="text-xs text-white leading-5">
                         Your booking is currently{" "}
                         <span className="font-semibold">
                           pending

@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { ArrowRight, Mail, MapPin, Clock } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
+import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: "Contact Us | FitPro",
+  title: "Contact Us",
   description:
-    "Get in touch with FitPro for support, trainer and gym listings, partnerships, or privacy requests. We respond as soon as possible.",
+    "Get in touch with our team for demo bookings, support, partnerships, or privacy requests. We respond as soon as possible.",
   alternates: { canonical: "/contact" },
 };
 
@@ -21,18 +23,18 @@ const ADDRESS = {
 
 const topics = [
   {
-    title: "General support",
+    title: "Demo bookings",
     description:
-      "Help with your account, using the platform, or reporting a problem.",
+      "Questions about your demo request, rescheduling, or the demo booking fee.",
     email: EMAIL,
-    subject: "Support request",
+    subject: "Demo booking enquiry",
   },
   {
-    title: "Trainers and gyms",
+    title: "General support",
     description:
-      "Questions about creating or updating your listing, profile, or services.",
+      "Help with your account, your training sessions, or reporting a problem.",
     email: EMAIL,
-    subject: "Trainer/Gym enquiry",
+    subject: "Support request",
   },
   {
     title: "Partnerships",
@@ -53,7 +55,7 @@ const topics = [
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
-  name: "Contact FitPro",
+  name: `Contact ${BRAND.name}`,
   mainEntity: {
     "@type": "Organization",
     name: COMPANY,
@@ -80,7 +82,7 @@ function mailto(email, subject) {
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-gray-50 pt-24">
+    <main className="min-h-screen bg-[#070d17] pt-24 text-white md:pt-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -88,95 +90,131 @@ export default function ContactPage() {
 
       <div className="mx-auto max-w-5xl px-6 pb-20 md:px-12">
         <Reveal>
-          <h1 className="text-3xl font-black text-black sm:text-4xl">
+          <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white sm:text-xs">
+            Get in touch
+          </p>
+          <h1 className="text-3xl font-black sm:text-4xl md:text-5xl">
             Contact Us
           </h1>
 
-          <p className="mt-4 text-sm leading-7 text-black/60 sm:text-base">
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-white/60 sm:text-base">
             Have a question or feedback? Choose the topic that fits best and
             send us an email. We will respond as soon as possible.
           </p>
 
+          {/* Topic cards */}
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {topics.map((topic) => (
               <a
                 key={topic.title}
                 href={mailto(topic.email, topic.subject)}
-                className="group rounded-2xl border border-black/10 bg-white p-5 transition-colors hover:border-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
+                className="group rounded-2xl border border-white/10 bg-[#0f1a2b] p-5 transition-[transform,border-color] duration-300 hover:-translate-y-1 hover:border-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
               >
-                <h2 className="text-sm font-bold text-black">{topic.title}</h2>
-                <p className="mt-1 text-sm leading-6 text-black/60">
+                <h2 className="text-sm font-bold text-white">{topic.title}</h2>
+                <p className="mt-1 text-sm leading-6 text-white/60">
                   {topic.description}
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-black transition-colors group-hover:text-black/60">
-                  Email us →
+                <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-white transition-colors group-hover:text-white">
+                  Email us
+                  <ArrowRight
+                    size={15}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
+                  />
                 </span>
               </a>
             ))}
           </div>
 
-          <div className="mt-6 rounded-2xl border border-black/10 bg-white p-6 md:p-8">
-            <p className="text-sm font-semibold text-black">Email</p>
-            <p className="mt-1 text-sm text-black/60">
-              <a
-                href={`mailto:${EMAIL}`}
-                className="underline underline-offset-4 transition-colors hover:text-black"
-              >
-                {EMAIL}
-              </a>
-            </p>
+          {/* Details card */}
+          <div className="mt-6 rounded-2xl border border-white/10 bg-[#0f1a2b] p-6 md:p-8">
+            <div className="grid gap-8 md:grid-cols-3">
+              <div>
+                <p className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <Mail size={16} className="text-white" />
+                  Email
+                </p>
+                <p className="mt-2 text-sm text-white/60">
+                  <a
+                    href={`mailto:${EMAIL}`}
+                    className="underline underline-offset-4 transition-colors hover:text-white"
+                  >
+                    {EMAIL}
+                  </a>
+                </p>
+              </div>
 
-            <p className="mt-6 text-sm font-semibold text-black">Office</p>
-            <address className="mt-1 text-sm not-italic leading-6 text-black/60">
-              {COMPANY}
-              <br />
-              {ADDRESS.street}, {ADDRESS.city}
-              <br />
-              {ADDRESS.region}, {ADDRESS.country}
-            </address>
+              <div>
+                <p className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <MapPin size={16} className="text-white" />
+                  Office
+                </p>
+                <address className="mt-2 text-sm not-italic leading-6 text-white/60">
+                  {COMPANY}
+                  <br />
+                  {ADDRESS.street}, {ADDRESS.city}
+                  <br />
+                  {ADDRESS.region}, {ADDRESS.country}
+                </address>
+              </div>
 
-            <p className="mt-6 text-sm font-semibold text-black">
-              Response time
-            </p>
-            <p className="mt-1 text-sm text-black/60">
-              We aim to reply within 2 business days. Privacy and data requests
-              are acknowledged within 48 hours.
-            </p>
+              <div>
+                <p className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <Clock size={16} className="text-white" />
+                  Response time
+                </p>
+                <p className="mt-2 text-sm leading-6 text-white/60">
+                  We aim to reply within 2 business days. Privacy and data
+                  requests are acknowledged within 48 hours.
+                </p>
+              </div>
+            </div>
 
-            <p className="mt-6 text-xs leading-5 text-black/40">
-              For trainer, gym, or partnership queries, mention your use case in
-              the subject line. Please do not send sensitive personal or health
-              information by email.
+            <p className="mt-8 border-t border-white/10 pt-5 text-xs leading-5 text-white/40">
+              For partnership queries, mention your use case in the subject
+              line. Please do not send sensitive personal or health information
+              by email.
             </p>
           </div>
 
+          {/* Book a demo nudge */}
+          <div className="mt-6 flex flex-col items-start justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-[#0f1a2b] to-black p-6 sm:flex-row sm:items-center md:p-8">
+            <div>
+              <h2 className="text-lg font-bold">Want to try a session first?</h2>
+              <p className="mt-1 text-sm text-white/60">
+                Request a demo and our team will contact you to agree a time.
+              </p>
+            </div>
+            <Link
+              href="/book-demo"
+              className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-white-400 px-6 py-3 text-sm font-bold text-black transition-colors hover:bg-white"
+            >
+              Book a Demo
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
+          </div>
+
+          {/* Legal links */}
           <nav
             aria-label="Legal pages"
-            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-black/10 pt-6 text-sm font-semibold"
+            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm font-semibold"
           >
-            <Link
-              href="/privacy"
-              className="text-black transition-colors hover:text-black/60"
-            >
+            <Link href="/privacy" className="text-white/70 transition-colors hover:text-white">
               Privacy Policy
             </Link>
-            <Link
-              href="/terms"
-              className="text-black transition-colors hover:text-black/60"
-            >
+            <Link href="/terms" className="text-white/70 transition-colors hover:text-white">
               Terms of Service
             </Link>
-            <Link
-              href="/cookies"
-              className="text-black transition-colors hover:text-black/60"
-            >
+            <Link href="/cookies" className="text-white/70 transition-colors hover:text-white">
               Cookie Policy
             </Link>
           </nav>
 
           <Link
             href="/"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-black transition-colors hover:text-black/60"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition-colors hover:text-white"
           >
             ← Back to home
           </Link>

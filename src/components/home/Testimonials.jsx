@@ -152,25 +152,25 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="overflow-hidden bg-gray-50 py-24 md:py-28">
+    <section className="overflow-hidden bg-[#070d17] py-24 md:py-28">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10 lg:px-16">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[390px_1fr] lg:gap-16">
           {/* Left content */}
           <Reveal>
             <div className="max-w-[360px]">
               <div className="mb-7 inline-block">
-                <p className="text-[15px] font-medium tracking-wide text-[#222] md:text-[16px]">
+                <p className="text-[15px] font-medium tracking-wide text-white/60 md:text-[16px]">
                   TESTIMONIALS
                 </p>
 
-                <div className="mt-2 h-[2px] w-[133px] bg-lime-500" />
+                <div className="mt-2 h-[2px] w-[133px] bg-white" />
               </div>
 
-              <h2 className="text-[48px] font-extrabold leading-[0.98] tracking-[-2.5px] text-[#252525] sm:text-[54px] md:text-[58px] lg:text-[60px]">
+              <h2 className="text-[48px] font-extrabold leading-[0.98] tracking-[-2.5px] text-white sm:text-[54px] md:text-[58px] lg:text-[60px]">
                 What people
                 <br />
                 say about us
-                <span className="text-lime-500">.</span>
+                <span className="text-white/30">.</span>
               </h2>
 
               <div className="mt-9 flex items-center gap-3">
@@ -178,7 +178,7 @@ export default function Testimonials() {
                   type="button"
                   onClick={handlePrevious}
                   aria-label="Previous testimonial"
-                  className="flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 bg-white text-[#222] transition-all duration-300 hover:border-black hover:bg-black hover:text-white active:scale-95"
+                  className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white transition-all duration-300 hover:border-white/60 hover:bg-white hover:text-black active:scale-95"
                 >
                   <ArrowLeft size={20} strokeWidth={1.8} />
                 </button>
@@ -187,7 +187,7 @@ export default function Testimonials() {
                   type="button"
                   onClick={handleNext}
                   aria-label="Next testimonial"
-                  className="flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 bg-white text-[#222] transition-all duration-300 hover:border-black hover:bg-black hover:text-white active:scale-95"
+                  className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white transition-all duration-300 hover:border-white/60 hover:bg-white hover:text-black active:scale-95"
                 >
                   <ArrowRight size={20} strokeWidth={1.8} />
                 </button>
@@ -216,26 +216,26 @@ export default function Testimonials() {
                     key={`${testimonial.name}-${index}`}
                     className="w-full flex-none md:w-[82%] lg:w-[70%] xl:w-[62%]"
                   >
-                    <article className="relative min-h-[310px] rounded-4xl border border-gray-200 bg-white p-8 shadow-[0_8px_35px_rgba(0,0,0,0.07)] md:min-h-[290px] md:p-10 lg:p-11">
-                      <div className="pointer-events-none absolute right-8 top-7 select-none font-serif text-[70px] leading-none text-gray-100 md:right-10 md:top-9">
+                    <article className="relative min-h-[310px] rounded-4xl border border-white/10 bg-[#0f1a2b] p-8 shadow-[0_8px_35px_rgba(0,0,0,0.25)] transition-colors duration-300 hover:border-white/30 md:min-h-[290px] md:p-10 lg:p-11">
+                      <div className="pointer-events-none absolute right-8 top-7 select-none font-serif text-[70px] leading-none text-white/10 md:right-10 md:top-9">
                         “
                       </div>
 
-                      <h3 className="relative z-10 mb-6 text-[20px] font-semibold text-[#303030] md:text-[21px]">
+                      <h3 className="relative z-10 mb-6 text-[20px] font-semibold text-white md:text-[21px]">
                         {testimonial.name}
                       </h3>
 
-                      <p className="relative z-10 max-w-[520px] text-[17px] font-normal leading-[1.75] text-[#777] md:text-[18px]">
+                      <p className="relative z-10 max-w-[520px] text-[17px] font-normal leading-[1.75] text-white/65 md:text-[18px]">
                         {testimonial.quote}
                       </p>
 
                       <div className="absolute bottom-8 left-8 md:bottom-10 md:left-10">
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-white/45">
                           {testimonial.location}
                         </p>
                       </div>
 
-                      <div className="absolute bottom-0 left-5 h-[3px] w-20 bg-lime-500" />
+                      <div className="absolute bottom-0 left-5 h-[3px] w-20 bg-white" />
                     </article>
                   </div>
                 ))}

@@ -64,7 +64,7 @@ const allExploreLinks = [
 ];
 
 const exploreLinks = allExploreLinks.filter(
-  (link) => !link.flag || FEATURES[link.flag]
+  (link) => !link.flag || FEATURES[link.flag],
 );
 
 const companyLinks = [
@@ -100,7 +100,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="overflow-hidden bg-black text-white">
+    <footer className="overflow-hidden bg-[#070d17] text-white">
       <Reveal>
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-10 px-6 py-14 sm:gap-x-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-10 md:px-12 md:py-16">
           {/* Brand */}
@@ -125,13 +125,12 @@ export default function Footer() {
 
             <Link
               href="/book-demo"
-             className="group mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-white/80"
+              className="group mt-6 inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-gray-100"
             >
               Book a Demo
-
               <ArrowUpRight
                 size={16}
-                className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
               />
             </Link>
 
@@ -141,10 +140,9 @@ export default function Footer() {
                 className="group mt-4 flex w-fit items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-white/60"
               >
                 Become a trainer
-
                 <ArrowUpRight
                   size={16}
-                  className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                  className="transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
                 />
               </Link>
             )}

@@ -6,6 +6,9 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Dumbbell, Mail, Lock, ArrowRight } from "lucide-react";
 
+const inputClass =
+  "w-full rounded-lg border border-white/10 bg-[#070d17] py-3 pl-11 pr-4 text-white placeholder:text-white/30 transition-all focus:border-white focus:outline-none focus:ring-2 focus:ring-white";
+
 export default function LoginPage() {
   const router = useRouter();
   const [form, setForm] = useState({ email: "", password: "" });
@@ -43,6 +46,8 @@ export default function LoginPage() {
       router.push("/admin/dashboard");
     } else if (role === "trainer") {
       router.push("/trainer/dashboard");
+    } else if (role === "sales") {
+      router.push("/sales/dashboard");
     } else {
       router.push("/");
     }
@@ -50,36 +55,39 @@ export default function LoginPage() {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gray-50 px-6 py-16">
+    <section className="flex min-h-screen items-center justify-center bg-[#070d17] px-6 py-16 pt-28 text-white">
       <div className="w-full max-w-md">
-        <div className="flex flex-col items-center mb-8">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-black text-white mb-4">
+        <div className="mb-8 flex flex-col items-center">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-white text-black">
             <Dumbbell size={24} />
           </div>
-          <h1 className="text-2xl font-bold text-black">Welcome Back</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="text-2xl font-bold">Welcome Back</h1>
+          <p className="mt-1 text-sm text-white/55">
             Log in to continue your fitness journey
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm"
+          className="rounded-2xl border border-white/10 bg-[#0f1a2b] p-8 shadow-xl shadow-black/30"
         >
           {error && (
-            <div className="mb-5 rounded-lg bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3">
+            <div
+              role="alert"
+              className="mb-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+            >
               {error}
             </div>
           )}
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="mb-1.5 block text-sm font-medium text-white/80">
               Email
             </label>
             <div className="relative">
               <Mail
                 size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/35"
               />
               <input
                 type="email"
@@ -88,19 +96,19 @@ export default function LoginPage() {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="you@example.com"
-                className="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all"
+                className={inputClass}
               />
             </div>
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="mb-1.5 block text-sm font-medium text-white/80">
               Password
             </label>
             <div className="relative">
               <Lock
                 size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/35"
               />
               <input
                 type="password"
@@ -109,7 +117,7 @@ export default function LoginPage() {
                 value={form.password}
                 onChange={handleChange}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all"
+                className={inputClass}
               />
             </div>
           </div>
@@ -117,7 +125,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="group w-full flex items-center justify-center gap-2 rounded-lg bg-black text-white font-semibold py-3 hover:bg-gray-800 transition-all duration-300 disabled:opacity-60"
+            className="group flex w-full items-center justify-center gap-2 rounded-lg bg-white py-3 font-bold text-black transition-all duration-300 hover:bg-white disabled:opacity-60"
           >
             {loading ? "Logging in..." : "Log In"}
             {!loading && (
@@ -128,9 +136,12 @@ export default function LoginPage() {
             )}
           </button>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Don't have an account?{" "}
-            <Link href="/register" className="text-black font-medium hover:underline">
+          <p className="mt-6 text-center text-sm text-white/55">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="font-medium text-white hover:text-white hover:underline"
+            >
               Sign up
             </Link>
           </p>

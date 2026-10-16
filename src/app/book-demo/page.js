@@ -11,18 +11,15 @@ export default async function BookDemoPage({ searchParams }) {
   const pick = (key) => (typeof params?.[key] === "string" ? params[key] : "");
 
   return (
-    <main className="bg-gray-50 px-6 pb-20 pt-12 md:pt-32">
+    <main className="min-h-screen bg-[#070d17] px-6 pb-20 pt-12 text-white md:pt-32">
       <div className="mx-auto max-w-xl">
-        <h1 className="text-3xl font-black text-black md:text-4xl">
-          Request Your Demo
-        </h1>
-        <p className="mt-2 text-sm text-black/60">
+        <h1 className="text-3xl font-black md:text-4xl">Request Your Demo</h1>
+        <p className="mt-2 text-sm text-white/60">
           Fill in a few details. Our team will contact you to check trainer
           availability and agree a demo time.
         </p>
 
         <DemoRequestForm
-          defaultPackage={pick("package")}
           source={pick("utm_source") || pick("source")}
           medium={pick("utm_medium")}
           campaign={pick("utm_campaign")}

@@ -33,6 +33,9 @@ export default function BottomNav() {
     pathname.startsWith("/sales/") ||
     pathname.startsWith("/gym-owner/");
 
+  // Every public page is dark (same rule as Navbar). Dashboards stay white.
+  const isDarkPage = !isDashboard;
+
   // Book a Demo is for visitors and customers, not staff
   const showBookDemo = !isLoggedIn || role === "user";
 
@@ -91,9 +94,16 @@ export default function BottomNav() {
     .filter(Boolean)
     .slice(0, 5); // keep the bar to 5 tabs max
 
+  const activeColor = isDarkPage ? "text-white" : "text-black";
+  const idleColor = isDarkPage ? "text-white/50" : "text-gray-400";
+
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-gray-200 bg-white md:hidden"
+      className={`fixed inset-x-0 bottom-0 z-50 border-t md:hidden ${
+        isDarkPage
+          ? "border-white/10 bg-[#070d17]"
+          : "border-gray-200 bg-white"
+      }`}
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <div className="flex h-16 items-stretch justify-between px-2">
@@ -108,13 +118,19 @@ export default function BottomNav() {
                 className="flex flex-1 flex-col items-center justify-center gap-1"
               >
                 <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-full bg-black text-white shadow-sm transition-transform ${
-                    tab.isActive ? "scale-110" : ""
-                  }`}
+                  className={`flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-transform ${
+                    isDarkPage
+                      ? "bg-white text-black"
+                      : "bg-black text-white"
+                  } ${tab.isActive ? "scale-110" : ""}`}
                 >
                   <Icon size={20} strokeWidth={2.4} />
                 </span>
-                <span className="text-[10px] font-semibold text-black">
+                <span
+                  className={`text-[10px] font-semibold ${
+                    isDarkPage ? "text-white" : "text-black"
+                  }`}
+                >
                   {tab.label}
                 </span>
               </Link>
@@ -129,13 +145,13 @@ export default function BottomNav() {
             >
               <Icon
                 size={22}
-                className={tab.isActive ? "text-black" : "text-gray-400"}
+                className={tab.isActive ? activeColor : idleColor}
                 strokeWidth={tab.isActive ? 2.4 : 2}
               />
 
               <span
                 className={`text-[10px] font-medium ${
-                  tab.isActive ? "text-black" : "text-gray-400"
+                  tab.isActive ? activeColor : idleColor
                 }`}
               >
                 {tab.label}

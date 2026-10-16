@@ -18,21 +18,23 @@ export const metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#070d17",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" data-scroll-behavior="smooth" className="bg-[#070d17]">
+      <body className="bg-[#070d17]">
         <SessionWrapper>
           <Navbar />
+
           {/* pb-16 keeps content clear of the fixed mobile BottomNav */}
-          <div className="pb-16 md:pb-0">
+          <div className="bg-[#070d17] pb-16 md:pb-0">
             {children}
             <ScrollToTop />
             <Footer />
           </div>
+
           <BottomNav />
         </SessionWrapper>
       </body>

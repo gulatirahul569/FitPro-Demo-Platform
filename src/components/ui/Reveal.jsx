@@ -23,14 +23,17 @@ export default function Reveal({ children, delay = 0, className = "" }) {
           observer.disconnect();
         }
       },
-      // threshold 0: fire as soon as ANY part is visible. A ratio like 0.15
-      // can never be reached by a block taller than ~6x the phone screen.
-      { threshold: 0, rootMargin: "0px 0px -8% 0px" }
+      // Start revealing before the section fully enters the viewport,
+      // giving images time to load and decode.
+      {
+        threshold: 0,
+        rootMargin: "0px 0px 20% 0px",
+      }
     );
 
     observer.observe(node);
 
-    // Safety net: reveal anyway after 1.5s so content is never stuck hidden.
+    // Safety net: reveal anyway so content is never stuck hidden.
     const fallback = setTimeout(() => setVisible(true), 1500);
 
     return () => {
@@ -43,12 +46,13 @@ export default function Reveal({ children, delay = 0, className = "" }) {
     <div
       ref={ref}
       className={[
-        "transition-all duration-700 ease-out motion-reduce:transition-none",
-        visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0",
+        "transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
+        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
         className,
       ].join(" ")}
       style={{
         transitionDelay: visible ? `${delay}ms` : "0ms",
+        willChange: visible ? "auto" : "transform, opacity",
       }}
     >
       {children}
