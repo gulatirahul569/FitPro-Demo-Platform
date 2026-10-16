@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
@@ -23,27 +23,42 @@ import { FEATURES } from "@/lib/features";
 
 const allLinks = [
   { href: "/", label: "Home" },
+  { href: "/about", label: "About" },   
   { href: "/packages", label: "Packages" },
-  { href: "/#our-story", label: "About" },
-  { href: "/contact", label: "Contact" },
-  // Hidden by feature flags (code kept for later phases)
   { href: "/trainers", label: "Trainers", flag: "publicTrainerDirectory" },
+  { href: "/contact", label: "Contact" },
   { href: "/videos", label: "Videos", flag: "publicVideoLibrary" },
   { href: "/gyms", label: "Gyms", flag: "gyms" },
 ];
 
-const navLinks = allLinks.filter((link) => !link.flag || FEATURES[link.flag]);
+const navLinks = allLinks.filter(
+  (link) => !link.flag || FEATURES[link.flag]
+);
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
 
   const [profileMenu, setProfileMenu] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const isLoggedIn = status === "authenticated";
   const user = session?.user;
   const firstName = user?.name?.split(" ")[0];
-
   const role = user?.role;
 
   const isNormalUser = role === "user";
@@ -62,11 +77,12 @@ export default function Navbar() {
   const showBecomeTrainer =
     FEATURES.becomeTrainer && (!isLoggedIn || isNormalUser);
 
-  // Book a Demo is for visitors and customers, not staff
   const showBookDemo = !isLoggedIn || isNormalUser;
 
-  // Every public page uses the same dark navbar. Dashboards keep the white one.
-  const isDarkPage = !isDashboard;
+  // Transparent at the top on public pages.
+  // Dark background appears after scrolling.
+  // Dashboard pages remain white.
+  const isTransparent = !isDashboard && !isScrolled;
 
   const handleLogout = async () => {
     setProfileMenu(false);
@@ -82,9 +98,11 @@ export default function Navbar() {
     <Link
       href="/book-demo"
       className={`rounded-full px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
-        isDarkPage
+        isTransparent
           ? "bg-white text-black hover:bg-gray-100"
-          : "bg-black text-white hover:bg-gray-800"
+          : isDashboard
+            ? "bg-black text-white hover:bg-gray-800"
+            : "bg-white text-black hover:bg-gray-100"
       }`}
     >
       Book a Demo
@@ -92,22 +110,27 @@ export default function Navbar() {
   );
 
   return (
-    // Mobile uses BottomNav instead of a top header, so this is desktop-only.
     <header
-      className={`z-50 hidden transition-colors duration-300 md:block ${
+      className={`z-50 hidden transition-all duration-300 md:block ${
         isDashboard
           ? "relative border-b border-gray-200 bg-white"
-          : "fixed inset-x-0 top-0 border-b border-white/10 bg-[#070d17]"
+          : `fixed inset-x-0 top-0 ${
+              isTransparent
+                ? "border-b border-transparent bg-transparent"
+                : "border-b border-white/10 bg-[#070d17]/95 shadow-lg backdrop-blur-xl"
+            }`
       }`}
     >
-      <div className="mx-auto flex h-18 max-w-full items-center justify-between px-12">
+      <div className="mx-auto flex h-[72px] max-w-full items-center justify-between px-12">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-2">
           <div
             className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 ease-out group-hover:rotate-12 ${
-              isDarkPage
-                ? "border border-white/20 bg-white/10 text-white"
-                : "bg-black text-white"
+              isTransparent
+                ? "border border-white/30 bg-white/10 text-white"
+                : isDashboard
+                  ? "bg-black text-white"
+                  : "border border-white/20 bg-white/10 text-white"
             }`}
           >
             <Dumbbell size={22} />
@@ -115,11 +138,23 @@ export default function Navbar() {
 
           <span
             className={`text-3xl font-extrabold tracking-tight transition-colors duration-300 ${
-              isDarkPage ? "text-white" : "text-black"
+              isTransparent
+                ? "text-white"
+                : isDashboard
+                  ? "text-black"
+                  : "text-white"
             }`}
           >
             {BRAND.nameParts[0]}
-            <span className={isDarkPage ? "text-white/50" : "text-gray-500"}>
+            <span
+              className={
+                isTransparent
+                  ? "text-white/60"
+                  : isDashboard
+                    ? "text-gray-500"
+                    : "text-white/50"
+              }
+            >
               {BRAND.nameParts[1]}
             </span>
           </span>
@@ -132,16 +167,18 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               className={`group relative text-lg font-medium transition-colors duration-300 ${
-                isDarkPage
-                  ? "text-white hover:text-white"
-                  : "text-gray-700 hover:text-black"
+                isTransparent
+                  ? "text-white/90 hover:text-white"
+                  : isDashboard
+                    ? "text-gray-700 hover:text-black"
+                    : "text-white/90 hover:text-white"
               }`}
             >
               {link.label}
 
               <span
                 className={`absolute -bottom-1 left-0 h-[1.5px] w-0 transition-all duration-300 ease-out group-hover:w-full ${
-                  isDarkPage ? "bg-white" : "bg-black"
+                  isDashboard ? "bg-black" : "bg-white"
                 }`}
               />
             </Link>
@@ -156,9 +193,9 @@ export default function Navbar() {
                 <Link
                   href="/become-trainer"
                   className={`rounded-full px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
-                    isDarkPage
-                      ? "bg-white text-black hover:bg-gray-100"
-                      : "bg-black text-white hover:bg-gray-800"
+                    isDashboard
+                      ? "bg-black text-white hover:bg-gray-800"
+                      : "border border-white/50 text-white hover:bg-white hover:text-black"
                   }`}
                 >
                   Become a Trainer
@@ -168,9 +205,9 @@ export default function Navbar() {
               <Link
                 href="/login"
                 className={`rounded-full border px-5 py-2.5 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
-                  isDarkPage
-                    ? "border-white/50 text-white hover:bg-white hover:text-black"
-                    : "border-black text-black hover:bg-black hover:text-white"
+                  isDashboard
+                    ? "border-black text-black hover:bg-black hover:text-white"
+                    : "border-white/50 text-white hover:bg-white hover:text-black"
                 }`}
               >
                 Login
@@ -186,9 +223,9 @@ export default function Navbar() {
                 <Link
                   href="/become-trainer"
                   className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 ${
-                    isDarkPage
-                      ? "border border-white/40 text-white hover:bg-white hover:text-black"
-                      : "border border-black text-black hover:bg-black hover:text-white"
+                    isDashboard
+                      ? "border border-black text-black hover:bg-black hover:text-white"
+                      : "border border-white/40 text-white hover:bg-white hover:text-black"
                   }`}
                 >
                   Become a Trainer
@@ -202,14 +239,16 @@ export default function Navbar() {
                   type="button"
                   onClick={() => setProfileMenu((current) => !current)}
                   className={`flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 transition-colors duration-300 ${
-                    isDarkPage
-                      ? "border border-white/30 bg-white/10 hover:border-white/50"
-                      : "border border-gray-200 hover:border-gray-300"
+                    isDashboard
+                      ? "border border-gray-200 hover:border-gray-300"
+                      : "border border-white/30 bg-white/5 hover:border-white/50"
                   }`}
                 >
                   <div
                     className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold ${
-                      isDarkPage ? "bg-white text-black" : "bg-black text-white"
+                      isDashboard
+                        ? "bg-black text-white"
+                        : "bg-white text-black"
                     }`}
                   >
                     {firstName?.charAt(0)?.toUpperCase()}
@@ -217,7 +256,7 @@ export default function Navbar() {
 
                   <span
                     className={`text-sm font-medium ${
-                      isDarkPage ? "text-white" : "text-black"
+                      isDashboard ? "text-black" : "text-white"
                     }`}
                   >
                     {firstName}
@@ -227,19 +266,26 @@ export default function Navbar() {
                     size={16}
                     className={`transition-transform duration-200 ${
                       profileMenu ? "rotate-180" : ""
-                    } ${isDarkPage ? "text-white/80" : "text-gray-500"}`}
+                    } ${isDashboard ? "text-gray-500" : "text-white/80"}`}
                   />
                 </button>
 
                 {profileMenu && (
                   <>
-                    <div className="fixed inset-0 z-40" onClick={closeMenu} />
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={closeMenu}
+                    />
 
                     <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
                       <div className="border-b border-gray-100 px-4 py-4">
-                        <p className="font-semibold text-black">{user?.name}</p>
+                        <p className="font-semibold text-black">
+                          {user?.name}
+                        </p>
 
-                        <p className="text-sm text-gray-500">{user?.email}</p>
+                        <p className="text-sm text-gray-500">
+                          {user?.email}
+                        </p>
 
                         {role && (
                           <p className="mt-1 text-xs capitalize text-gray-400">
@@ -311,16 +357,12 @@ export default function Navbar() {
   );
 }
 
-function ProfileMenuItem({ href, icon: Icon, label, onClick, light = false }) {
+function ProfileMenuItem({ href, icon: Icon, label, onClick }) {
   return (
     <Link
       href={href}
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${
-        light
-          ? "text-white/90 hover:bg-white/10 hover:text-white"
-          : "text-gray-700 hover:bg-gray-50 hover:text-black"
-      }`}
+      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-black"
     >
       <Icon size={17} />
       {label}

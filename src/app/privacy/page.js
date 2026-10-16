@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
+import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: "Privacy Policy | FitPro",
+  title: "Privacy Policy",
   description:
     "FitPro Privacy Policy – how we collect, use, share, and protect your personal information, and the choices and rights you have.",
   alternates: { canonical: "/privacy" },
@@ -10,31 +11,31 @@ export const metadata = {
 
 // TODO: replace with your real contact details before launch.
 const CONTACT_EMAIL = "support@fitpro.example";
-const LAST_UPDATED = "September 24, 2026";
+const LAST_UPDATED = "October 16, 2026";
 
 // Each block is either a paragraph (string) or { list: [...] }.
 const sections = [
   {
     title: "1. Who we are",
     content: [
-      "FitPro (\"FitPro\", \"we\", \"us\", or \"our\") is an online platform that helps people discover fitness trainers and gyms, and helps trainers and gyms showcase their services. This Privacy Policy explains what personal information we collect, why we collect it, how we use and protect it, and the rights you have over it.",
+      `${BRAND.name} (“${BRAND.name}”, “we”, “us”, or “our”) is an online platform that helps people request in-home fitness demos and coordinates those requests with suitable trainers. This Privacy Policy explains what personal information we collect, why we collect it, how we use and protect it, and the rights you have over it.`,
       "By accessing or using FitPro, you acknowledge that you have read this policy. If you do not agree with it, please do not use the platform.",
     ],
   },
   {
     title: "2. Information we collect",
     content: [
-      "We collect only the information we need to run and improve FitPro. This includes:",
+      "We collect only the information we need to handle demo requests and operate FitPro. This includes:",
       {
         list: [
+          "Demo request information: your name, email address, phone number, address or PIN code, fitness goal, package interest, preferred demo time slots, and any notes you provide.",
           "Account information: your name, email address, phone number (if provided), and password or sign-in credentials.",
-          "Profile information: for trainers and gyms, details such as business or professional name, photos, bio, specialisations, certifications, services, pricing, location, opening hours, and contact details you choose to display publicly.",
-          "Enquiries and communications: messages, enquiries, reviews, and any feedback you send through the platform or to our support team.",
+          "Communications: messages, enquiries, feedback, and any information you share with our support or coordination team.",
           "Usage and device data: pages viewed, features used, approximate location derived from your IP address, browser type, device type, operating system, referring pages, and timestamps.",
           "Cookies and similar technologies: small files and identifiers described in our Cookie Policy.",
         ],
       },
-      "We do not knowingly collect sensitive personal data such as health records, financial account numbers, or government identifiers. Please do not include such information in your profile or messages.",
+      "Please do not include sensitive personal data such as detailed medical records, financial account numbers, or government identifiers in demo requests or messages.",
     ],
   },
   {
@@ -43,11 +44,12 @@ const sections = [
       "We use your information to:",
       {
         list: [
-          "Create and manage your account and authenticate you.",
-          "Operate the platform, including displaying trainer and gym profiles and connecting users with providers.",
-          "Respond to enquiries, provide support, and send service-related notices such as security alerts and policy updates.",
-          "Personalise search results and recommendations, for example by location or interests.",
-          "Analyse usage, measure performance, fix bugs, and improve our features and services.",
+          "Receive, review, and manage your demo request.",
+          "Contact you by phone or email to discuss trainer availability and agree on a suitable demo time.",
+          "Coordinate demo scheduling with you and assigned trainers.",
+          "Process demo-related payments, where applicable, and send payment confirmations or receipts.",
+          "Provide customer support and send service-related notices such as booking updates, security alerts, and policy changes.",
+          "Analyse usage, measure performance, fix issues, and improve our services.",
           "Detect, prevent, and investigate fraud, abuse, security incidents, and violations of our Terms of Service.",
           "Comply with legal obligations and enforce our legal rights.",
         ],
@@ -58,7 +60,7 @@ const sections = [
   {
     title: "4. Legal basis and consent",
     content: [
-      "We process your personal data based on your consent, to perform our services for you, for our legitimate interests in running and securing the platform (where these are not overridden by your rights), and to comply with applicable law, including India's Digital Personal Data Protection Act, 2023 and the Information Technology Act, 2000 and rules made under it. Where we rely on consent, you may withdraw it at any time by contacting us; withdrawal does not affect processing carried out before it.",
+      "We process your personal data based on your consent, to perform our services for you, for our legitimate interests in running and securing the platform (where these are not overridden by your rights), and to comply with applicable law, including India’s Digital Personal Data Protection Act, 2023 and the Information Technology Act, 2000 and rules made under it. Where we rely on consent, you may withdraw it at any time by contacting us; withdrawal does not affect processing carried out before it.",
     ],
   },
   {
@@ -67,9 +69,8 @@ const sections = [
       "We do not sell your personal data. We share information only in these situations:",
       {
         list: [
-          "Public profiles: information that trainers and gyms choose to publish in their profile is visible to other visitors.",
-          "Between users: when you send an enquiry, the recipient trainer or gym receives the details needed to respond.",
-          "Service providers: trusted vendors that help us operate FitPro, such as hosting, database, authentication, analytics, email delivery, and customer support. They may process data only on our instructions and under confidentiality obligations.",
+          "Assigned trainers: where a demo is being coordinated, we may share the minimum necessary details, such as your name, contact information, location or PIN code, fitness goal, and agreed demo time, with the trainer assigned to the demo.",
+          "Service providers: trusted vendors that help us operate FitPro, such as hosting, database, authentication, analytics, email delivery, payment processing, and customer-support tools. They may process data only on our instructions and under confidentiality obligations.",
           "Legal and safety: where required by law, court order, or government request, or where necessary to protect the rights, safety, or property of FitPro, our users, or the public.",
           "Business transfers: if FitPro is involved in a merger, acquisition, or sale of assets, your information may be transferred, and we will notify you of any material change in how it is handled.",
         ],
@@ -79,13 +80,13 @@ const sections = [
   {
     title: "6. Cookies and analytics",
     content: [
-      "We use cookies and similar technologies to keep you signed in, remember preferences, understand how the site is used, and improve performance. You can manage them as described in our Cookie Policy.",
+      "We use cookies and similar technologies to keep you signed in, remember preferences, understand how the site is used, measure campaign performance, and improve performance. You can manage them as described in our Cookie Policy.",
     ],
   },
   {
     title: "7. Data retention",
     content: [
-      "We keep personal data only for as long as needed for the purposes described in this policy, including to satisfy legal, accounting, or reporting requirements. When you delete your account, we delete or anonymise your personal data within a reasonable period, except where we must retain certain information to comply with the law, resolve disputes, or enforce our agreements.",
+      "We keep personal data only for as long as needed for the purposes described in this policy, including to manage demo requests, maintain business records, satisfy legal, accounting, or reporting requirements, and resolve disputes. When you delete your account, we delete or anonymise your personal data within a reasonable period, except where we must retain certain information to comply with the law, resolve disputes, or enforce our agreements.",
     ],
   },
   {
@@ -111,7 +112,7 @@ const sections = [
           "Request erasure of your personal data.",
           "Withdraw consent you previously gave.",
           "Nominate another person to exercise your rights in the event of your death or incapacity.",
-          "Object to or restrict certain processing, and request a portable copy of your data, where applicable law (such as the GDPR) provides for it.",
+          "Object to or restrict certain processing, and request a portable copy of your data, where applicable law provides for it.",
           "Lodge a complaint with your local data protection authority.",
         ],
       },
@@ -119,7 +120,7 @@ const sections = [
     ],
   },
   {
-    title: "11. Children's privacy",
+    title: "11. Children’s privacy",
     content: [
       "FitPro is intended for users who are 18 years of age or older. We do not knowingly collect personal data from children. If you believe a child has provided us with personal data, please contact us and we will delete it promptly.",
     ],
@@ -127,7 +128,7 @@ const sections = [
   {
     title: "12. Third-party links and services",
     content: [
-      "FitPro may contain links to third-party websites, social media pages, or services, including trainer and gym websites. We are not responsible for their privacy practices or content, and we encourage you to read their policies before sharing any information.",
+      "FitPro may contain links to third-party websites, social media pages, or services. We are not responsible for their privacy practices or content, and we encourage you to read their policies before sharing any information.",
     ],
   },
   {
@@ -139,7 +140,7 @@ const sections = [
   {
     title: "14. Changes to this policy",
     content: [
-      "We may update this Privacy Policy from time to time. When we make material changes, we will update the \"Last updated\" date above and, where appropriate, notify you through the platform or by email. Your continued use of FitPro after changes take effect means you accept the updated policy.",
+      'We may update this Privacy Policy from time to time. When we make material changes, we will update the “Last updated” date above and, where appropriate, notify you through the platform or by email. Your continued use of FitPro after changes take effect means you accept the updated policy.',
     ],
   },
 ];
@@ -148,6 +149,7 @@ function Block({ block }) {
   if (typeof block === "string") {
     return <p className="mt-2">{block}</p>;
   }
+
   return (
     <ul className="mt-2 list-disc space-y-1.5 pl-5">
       {block.list.map((item) => (
@@ -159,23 +161,24 @@ function Block({ block }) {
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-gray-50 pt-5 lg:pt-24">
+    <main className="min-h-screen bg-[#070d17] pt-8 text-white lg:pt-24">
       <div className="mx-auto max-w-5xl px-6 pb-20 md:px-12">
         <Reveal>
-          <h1 className="text-3xl font-black text-black sm:text-4xl">
+          <h1 className="text-3xl font-black text-white sm:text-4xl">
             Privacy Policy
           </h1>
 
-          <p className="mt-2 text-xs text-black/40">
+          <p className="mt-2 text-xs text-white/40">
             Last updated: {LAST_UPDATED}
           </p>
 
-          <div className="mt-6 space-y-6 text-sm leading-7 text-black/60">
+          <div className="mt-6 space-y-6 text-sm leading-7 text-white/60">
             {sections.map((section) => (
               <section key={section.title}>
-                <h2 className="text-base font-bold text-black">
+                <h2 className="text-base font-bold text-white">
                   {section.title}
                 </h2>
+
                 {section.content.map((block, i) => (
                   <Block key={i} block={block} />
                 ))}
@@ -185,17 +188,18 @@ export default function PrivacyPage() {
 
           <nav
             aria-label="Legal pages"
-            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-black/10 pt-6 text-sm font-semibold"
+            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm font-semibold"
           >
             <Link
               href="/terms"
-              className="text-black transition-colors hover:text-black/60"
+              className="text-white transition-colors hover:text-white/60"
             >
               Terms of Service
             </Link>
+
             <Link
               href="/cookies"
-              className="text-black transition-colors hover:text-black/60"
+              className="text-white transition-colors hover:text-white/60"
             >
               Cookie Policy
             </Link>
@@ -203,7 +207,7 @@ export default function PrivacyPage() {
 
           <Link
             href="/"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-black transition-colors hover:text-black/60"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-white/60"
           >
             ← Back to home
           </Link>

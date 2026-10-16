@@ -10,7 +10,7 @@ export default function PackagesPreview() {
       id="packages"
       className="scroll-mt-24 bg-[#070d17] px-6 py-16 md:px-12"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-full">
         <Reveal>
           <div className="mb-10 text-center">
             <h2 className="text-3xl font-bold text-white md:text-4xl">

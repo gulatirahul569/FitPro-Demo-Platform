@@ -10,6 +10,7 @@ import FinalCta from "@/components/home/FinalCta";
 import OurStory from "@/components/home/Ourstory";
 import { FEATURES } from "@/lib/features";
 import PackagesPreview from "@/components/home/PackagesPreview";
+import DemoJourney from "@/components/about/DemoJourney";
 
 export default function Home() {
   return (
@@ -17,9 +18,10 @@ export default function Home() {
       <Hero />
 
       {/* Hidden for Phase 1 (flip the flag in lib/features.js to bring back) */}
-      {FEATURES.publicTrainerDirectory && <FeaturedTrainers />}
+      {/* {FEATURES.publicTrainerDirectory && <FeaturedTrainers />} */}
 
       <OurStory />
+      <DemoJourney />
 
       <PackagesPreview />
 

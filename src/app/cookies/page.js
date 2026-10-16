@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
+import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: "Cookie Policy | FitPro",
+  title: "Cookie Policy",
   description:
     "FitPro Cookie Policy – what cookies and similar technologies we use, why we use them, and how you can control them.",
   alternates: { canonical: "/cookies" },
@@ -10,7 +11,7 @@ export const metadata = {
 
 // TODO: replace with your real contact details before launch.
 const CONTACT_EMAIL = "support@fitpro.example";
-const LAST_UPDATED = "September 24, 2026";
+const LAST_UPDATED = "October 16, 2026";
 
 const cookieTypes = [
   {
@@ -49,7 +50,7 @@ const sections = [
           "Device and log data: information such as IP address, browser type, and referring page collected automatically by our servers and hosting provider.",
         ],
       },
-      "In this policy, we refer to all of these as \"cookies\".",
+      'In this policy, we refer to all of these as "cookies".',
     ],
   },
   {
@@ -62,7 +63,7 @@ const sections = [
   {
     title: "4. Third-party cookies",
     content: [
-      "Some cookies are set by trusted third parties that provide services to us, such as our hosting platform, analytics tools, and embedded content like maps or fonts. These providers may collect information about your use of FitPro and other sites according to their own privacy policies. We do not control those cookies, so please review the relevant provider's policy for details.",
+      "Some cookies are set by trusted third parties that provide services to us, such as our hosting platform, analytics tools, payment providers, and embedded content like maps or fonts. These providers may collect information about your use of FitPro and other sites according to their own privacy policies. We do not control those cookies, so please review the relevant provider’s policy for details.",
     ],
   },
   {
@@ -83,19 +84,19 @@ const sections = [
           "Clear cookies automatically each time you close the browser.",
         ],
       },
-      "Blocking strictly necessary cookies may prevent you from signing in or using some features of FitPro. Because settings differ between browsers and devices, see your browser's help pages (for example Chrome, Safari, Firefox, or Edge) for step-by-step instructions.",
+      "Blocking strictly necessary cookies may prevent you from signing in or using some features of FitPro. Because settings differ between browsers and devices, see your browser’s help pages (for example Chrome, Safari, Firefox, or Edge) for step-by-step instructions.",
     ],
   },
   {
     title: "7. Do Not Track and Global Privacy Control",
     content: [
-      "Some browsers offer a \"Do Not Track\" or Global Privacy Control signal. Where we can reasonably detect such a signal, we will respect it for non-essential cookies. There is currently no uniform industry standard for responding to these signals.",
+      'Some browsers offer a "Do Not Track" or Global Privacy Control signal. Where we can reasonably detect such a signal, we will respect it for non-essential cookies. There is currently no uniform industry standard for responding to these signals.',
     ],
   },
   {
     title: "8. Changes to this policy",
     content: [
-      "We may update this Cookie Policy as our services or legal requirements change. We will revise the \"Last updated\" date above, and where changes are material, we will notify you through the site. Please check this page periodically.",
+      'We may update this Cookie Policy as our services or legal requirements change. We will revise the "Last updated" date above, and where changes are material, we will notify you through the site. Please check this page periodically.',
     ],
   },
   {
@@ -110,6 +111,7 @@ function Block({ block }) {
   if (typeof block === "string") {
     return <p className="mt-2">{block}</p>;
   }
+
   return (
     <ul className="mt-2 list-disc space-y-1.5 pl-5">
       {block.list.map((item) => (
@@ -121,23 +123,24 @@ function Block({ block }) {
 
 export default function CookiesPage() {
   return (
-    <main className="min-h-screen bg-gray-50 pt-5 lg:pt-24">
+    <main className="min-h-screen bg-[#070d17] pt-8 text-white lg:pt-24">
       <div className="mx-auto max-w-5xl px-6 pb-20 md:px-12">
         <Reveal>
-          <h1 className="text-3xl font-black text-black sm:text-4xl">
+          <h1 className="text-3xl font-black text-white sm:text-4xl">
             Cookie Policy
           </h1>
 
-          <p className="mt-2 text-xs text-black/40">
+          <p className="mt-2 text-xs text-white/40">
             Last updated: {LAST_UPDATED}
           </p>
 
-          <div className="mt-6 space-y-6 text-sm leading-7 text-black/60">
+          <div className="mt-6 space-y-6 text-sm leading-7 text-white/60">
             {sections.map((section) => (
               <section key={section.title}>
-                <h2 className="text-base font-bold text-black">
+                <h2 className="text-base font-bold text-white">
                   {section.title}
                 </h2>
+
                 {section.content.map((block, i) => (
                   <Block key={i} block={block} />
                 ))}
@@ -147,11 +150,12 @@ export default function CookiesPage() {
                     {cookieTypes.map((type) => (
                       <div
                         key={type.name}
-                        className="rounded-xl border border-black/10 bg-white p-4"
+                        className="rounded-xl border border-white/10 bg-[#0f1a2b] p-4"
                       >
-                        <h3 className="text-sm font-bold text-black">
+                        <h3 className="text-sm font-bold text-white">
                           {type.name}
                         </h3>
+
                         <p className="mt-1">{type.purpose}</p>
                       </div>
                     ))}
@@ -163,17 +167,18 @@ export default function CookiesPage() {
 
           <nav
             aria-label="Legal pages"
-            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-black/10 pt-6 text-sm font-semibold"
+            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm font-semibold"
           >
             <Link
               href="/privacy"
-              className="text-black transition-colors hover:text-black/60"
+              className="text-white transition-colors hover:text-white/60"
             >
               Privacy Policy
             </Link>
+
             <Link
               href="/terms"
-              className="text-black transition-colors hover:text-black/60"
+              className="text-white transition-colors hover:text-white/60"
             >
               Terms of Service
             </Link>
@@ -181,7 +186,7 @@ export default function CookiesPage() {
 
           <Link
             href="/"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-black transition-colors hover:text-black/60"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-white/60"
           >
             ← Back to home
           </Link>

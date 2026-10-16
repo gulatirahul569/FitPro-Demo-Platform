@@ -68,7 +68,7 @@ const exploreLinks = allExploreLinks.filter(
 );
 
 const companyLinks = [
-  { href: "/#our-story", label: `About ${BRAND.name}` },
+  { href: "/about", label: `About ${BRAND.name}` },
   { href: "/contact", label: "Contact Us" },
   { href: "/faq", label: "FAQs" },
 ];
@@ -102,7 +102,7 @@ export default function Footer() {
   return (
     <footer className="overflow-hidden bg-[#070d17] text-white">
       <Reveal>
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-10 px-6 py-14 sm:gap-x-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-10 md:px-12 md:py-16">
+        <div className="mx-auto grid max-w-full grid-cols-2 gap-x-6 gap-y-10 px-6 py-14 sm:gap-x-10 md:grid-cols-[1.5fr_1fr_1fr_1fr] md:gap-10 md:px-12 md:py-16">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link
@@ -215,7 +215,7 @@ export default function Footer() {
 
       {/* Bottom footer */}
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-6 text-sm text-white/45 md:flex-row md:justify-between md:px-12">
+        <div className="mx-auto flex max-w-full flex-col items-center gap-4 px-6 py-6 text-sm text-white/45 md:flex-row md:justify-between md:px-12">
           <p className="text-center">
             © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
           </p>

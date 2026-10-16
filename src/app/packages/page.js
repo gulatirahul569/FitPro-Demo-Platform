@@ -38,7 +38,7 @@ export default function PackagesPage() {
         )}
 
         {/* Dark fade keeps the text readable on any photo */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/20" />
 
         <div className="relative z-10 mx-auto max-w-full px-6 pb-12 pt-16 md:px-12 md:pb-16 md:pt-40">
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl md:text-8xl">

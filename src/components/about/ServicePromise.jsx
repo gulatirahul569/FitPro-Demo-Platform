@@ -1,0 +1,141 @@
+import { CalendarCheck, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
+import Reveal from "@/components/ui/Reveal";
+import { BRAND } from "@/lib/brand";
+import PackageImage from "@/components/packages/PackageImage";
+
+
+const promises = [
+  {
+    icon: MessageCircle,
+    title: "We contact you after your request",
+    description:
+      "Once you submit a demo request, our team reviews the details and contacts you to discuss suitable options.",
+    image:
+      "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg",
+    alt: "Team reviewing and responding to a request",
+  },
+  {
+    icon: MapPin,
+    title: "We check location-based availability",
+    description:
+      "We consider your location or PIN code while checking whether a suitable trainer may be available for your demo.",
+    image:
+      "https://images.pexels.com/photos/1105766/pexels-photo-1105766.jpeg",
+    alt: "Location mapping concept",
+  },
+  {
+    icon: CalendarCheck,
+    title: "Demos are confirmed with you",
+    description:
+      "A demo time is confirmed only after it works for you and a suitable trainer. Submitting a request does not confirm a booking.",
+    image:
+      "https://images.pexels.com/photos/280221/pexels-photo-280221.jpeg",
+    alt: "Calendar scheduling concept",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Clear next steps",
+    description:
+      "After the demo, our team follows up to help you understand the available package options and decide what suits you.",
+    image:
+      "https://images.pexels.com/photos/4498482/pexels-photo-4498482.jpeg",
+    alt: "Fitness consultation and planning",
+  },
+];
+
+
+export default function ServicePromise() {
+  return (
+    <section className="bg-[#070d17] px-6 py-8 sm:py-12 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-full">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+          {/* Left: heading */}
+          <Reveal>
+            <div className="flex flex-col justify-center">
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-white/40 sm:text-xs">
+                Our Service Promise
+              </p>
+
+
+              <h2 className="text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">
+                Clear communication.
+                <br />
+                <span className="text-white/30">Coordinated demos.</span>
+              </h2>
+
+
+              <p className="mt-6 max-w-xl text-sm leading-7 text-white/65 sm:text-base sm:leading-8">
+                {BRAND.name} keeps the demo process straightforward: you share
+                your requirements, our team coordinates availability, and a
+                demo is confirmed only when the time works for both you and the
+                trainer.
+              </p>
+
+
+              <div className="mt-8 rounded-2xl border border-white/10 bg-[#0f1a2b] p-6">
+                <h3 className="text-lg font-bold text-white">
+                  What we do not promise
+                </h3>
+
+
+                <p className="mt-2 text-sm leading-6 text-white/60">
+                  We do not guarantee trainer availability for every location
+                  or time slot. Availability depends on trainer coverage and
+                  scheduling.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+
+          {/* Right: promise cards */}
+          <Reveal delay={120}>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {promises.map((item) => {
+                const Icon = item.icon;
+
+
+                return (
+                  <div
+                    key={item.title}
+                    className="group relative flex h-full min-h-[240px] flex-col overflow-hidden rounded-2xl border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/30"
+                  >
+                    {/* Background image */}
+                    <PackageImage
+                      src={item.image}
+                      alt={item.alt}
+                      width={800}
+                      className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                    />
+
+
+                    {/* Dark overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#070d17] via-[#070d17]/60 to-[#070d17]/30" />
+
+
+                    {/* Card content */}
+                    <div className="relative flex h-full flex-col p-6">
+                      <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white backdrop-blur-sm transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+                        <Icon size={20} />
+                      </div>
+
+
+                      <h3 className="text-lg font-bold text-white">
+                        {item.title}
+                      </h3>
+
+
+                      <p className="mt-2 text-sm leading-6 text-white/70">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}

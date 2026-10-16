@@ -36,7 +36,7 @@ export default function HowItWorks() {
       id="how-it-works"
       className="scroll-mt-24 bg-[#070d17] px-6 py-20 pt-3 md:px-12"
     >
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-full">
         <Reveal>
           <h2 className="mb-16 text-center text-3xl font-bold text-white md:text-4xl">
             How It Works

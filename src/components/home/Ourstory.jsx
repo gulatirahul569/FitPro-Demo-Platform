@@ -7,9 +7,9 @@ export default function OurStory() {
   return (
     <section
       id="our-story"
-      className="scroll-mt-24 bg-[#070d17] px-6 py-12 pt-0 sm:px-6 sm:py-16 md:px-8 md:py-20 lg:px-12"
+      className="scroll-mt-24 bg-[#070d17] px-6 py-12 pt-0 sm:px-6 sm:py-16 md:px-8 md:py-20 lg:px-6"
     >
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-8 sm:gap-10 md:grid-cols-2 md:gap-12 lg:gap-16 lg:px-6">
+      <div className="mx-auto grid max-w-full grid-cols-1 items-center gap-8 sm:gap-10 md:grid-cols-2 md:gap-12 lg:gap-16 lg:px-6">
         {/* ================= VISUAL ================= */}
         <Reveal className="order-2 md:order-none">
           <div className="relative">

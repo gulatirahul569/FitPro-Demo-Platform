@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
+import { BRAND } from "@/lib/brand";
 
 export const metadata = {
-  title: "Frequently Asked Questions | FitPro",
+  title: "Frequently Asked Questions",
   description:
-    "Answers to common questions about FitPro: finding trainers, partner gyms, trial sessions, accounts, and your data.",
+    "Answers to common questions about requesting an in-home fitness demo, trainer availability, demo scheduling, payments, accounts, and your data.",
   alternates: { canonical: "/faq" },
 };
 
@@ -15,50 +16,54 @@ const groups = [
     title: "About FitPro",
     items: [
       {
-        q: "What is FitPro?",
-        a: "FitPro is a platform that connects you with trusted fitness trainers, partner gyms, and quality workout content, all in one place.",
+        q: `What is ${BRAND.name}?`,
+        a: `${BRAND.name} helps you request an in-home fitness demo. You share your goals, location, and preferred timings, and our team coordinates with a suitable trainer to arrange a demo at your home.`,
       },
       {
-        q: "Is FitPro free to use?",
-        a: "Browsing trainers, gyms, and content is currently free. If we introduce paid plans or features, we will clearly show the price and terms before you pay.",
+        q: "Is submitting a demo request the same as booking a demo?",
+        a: "No. Submitting a request only shares your requirements and preferred timings. A demo is confirmed only after our team coordinates a suitable time with you and a trainer.",
       },
       {
-        q: "Does FitPro provide the training or gym services itself?",
-        a: "No. FitPro is a platform that helps you discover independent trainers and gyms. Sessions, memberships, and pricing are arranged directly between you and the trainer or gym.",
-      },
-    ],
-  },
-  {
-    title: "Trainers",
-    items: [
-      {
-        q: "How do I find a trainer?",
-        a: "Go to the Find Trainers page, browse profiles, and filter by specialization, location, and price to shortlist the trainers that suit your goals.",
-      },
-      {
-        q: "Can I book a trial session?",
-        a: "Trial availability depends on each trainer. Check their profile for details or contact them directly to ask.",
-      },
-      {
-        q: "How do I know a trainer is right for me?",
-        a: "Read their profile, specialisations, and certifications, and message them with questions before committing. We recommend starting with a trial session where offered.",
-      },
-      {
-        q: "How can I list myself as a trainer?",
-        a: "Reach out through our Contact page with the subject Trainer/Gym enquiry, and our team will guide you through getting your profile listed.",
+        q: "Do I need an account to request a demo?",
+        a: "No. You can request a demo without creating an account. An account may be useful later for managing your bookings and training information.",
       },
     ],
   },
   {
-    title: "Gyms",
+    title: "Demo requests",
     items: [
       {
-        q: "How do gyms partner with FitPro?",
-        a: "Gyms are onboarded by our team. If you represent a gym, contact us via the Contact page and we will get back to you with the next steps.",
+        q: "What details do I need to submit?",
+        a: "You will be asked for your name, phone number, email, location or PIN code, fitness goal, package interest, and three preferred time slots.",
       },
       {
-        q: "Does FitPro guarantee the quality of a gym or trainer?",
-        a: "We work to list genuine providers, but we cannot guarantee the quality, safety, or availability of any third-party service. Please review details and visit or speak with a provider before signing up.",
+        q: "How will I know if a trainer is available?",
+        a: "Our team checks trainer availability based on your location and preferred timings, then contacts you to discuss the available options.",
+      },
+      {
+        q: "Can I choose the date and time of my demo?",
+        a: "You can share three preferred time slots in order of priority. Our team will contact you to agree on a time that works for you and a suitable trainer.",
+      },
+      {
+        q: "What happens after I submit a request?",
+        a: "Our team reviews your request, checks suitable trainer availability, and contacts you to coordinate the next steps.",
+      },
+    ],
+  },
+  {
+    title: "Demos and payments",
+    items: [
+      {
+        q: "Is the demo free?",
+        a: "Demo availability and any demo booking fee depend on the current offering. If a fee applies, our team will explain the amount and terms before payment is collected.",
+      },
+      {
+        q: "When is payment collected?",
+        a: "Where applicable, payment is collected only after a suitable trainer and demo time have been agreed. Submitting a request does not require payment.",
+      },
+      {
+        q: "What happens after the demo?",
+        a: "After the demo, our team follows up to understand your experience and help you choose a package that suits your goals.",
       },
     ],
   },
@@ -71,7 +76,7 @@ const groups = [
       },
       {
         q: "How is my personal data used?",
-        a: "We use your information to run the platform and improve our services, and we do not sell your personal data. Our Privacy Policy explains what we collect and how you can access, correct, or delete it.",
+        a: "We use your information to coordinate your demo request, improve our services, and communicate with you. We do not sell your personal data. Our Privacy Policy explains what we collect and how you can access, correct, or delete it.",
       },
       {
         q: "How can I delete my account or data?",
@@ -79,7 +84,7 @@ const groups = [
       },
       {
         q: "I could not find my answer. What should I do?",
-        a: "Email us through the Contact page. We aim to reply within 2 business days.",
+        a: "Contact us through the Contact page. Our team will be happy to help.",
       },
     ],
   },
@@ -99,7 +104,7 @@ const jsonLd = {
 
 export default function FAQPage() {
   return (
-    <main className="min-h-screen bg-gray-50 pt-5 lg:pt-24">
+    <main className="min-h-screen bg-[#070d17] pt-8 text-white lg:pt-24">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -107,12 +112,13 @@ export default function FAQPage() {
 
       <div className="mx-auto max-w-5xl px-6 pb-20 md:px-12">
         <Reveal>
-          <h1 className="text-3xl font-black text-black sm:text-4xl">
+          <h1 className="text-3xl font-black text-white sm:text-4xl">
             Frequently Asked Questions
           </h1>
 
-          <p className="mt-4 text-sm leading-7 text-black/60 sm:text-base">
-            Quick answers to common questions about using FitPro.
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-white/60 sm:text-base">
+            Quick answers to common questions about requesting an in-home
+            fitness demo with {BRAND.name}.
           </p>
 
           <div className="mt-10 space-y-10">
@@ -120,7 +126,7 @@ export default function FAQPage() {
               <section key={group.title} aria-labelledby={group.title}>
                 <h2
                   id={group.title}
-                  className="text-xs font-bold uppercase tracking-widest text-black/40"
+                  className="text-xs font-bold uppercase tracking-widest text-white/40"
                 >
                   {group.title}
                 </h2>
@@ -129,18 +135,20 @@ export default function FAQPage() {
                   {group.items.map((item) => (
                     <details
                       key={item.q}
-                      className="group rounded-2xl border border-black/10 bg-white transition-colors open:border-black/30"
+                      className="group rounded-2xl border border-white/10 bg-[#0f1a2b] transition-colors open:border-white/30"
                     >
-                      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl p-5 text-sm font-bold text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-black [&::-webkit-details-marker]:hidden">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl p-5 text-sm font-bold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 [&::-webkit-details-marker]:hidden">
                         {item.q}
+
                         <span
                           aria-hidden="true"
-                          className="shrink-0 text-lg font-normal leading-none text-black/40 transition-transform duration-200 group-open:rotate-45"
+                          className="shrink-0 text-lg font-normal leading-none text-white/40 transition-transform duration-200 group-open:rotate-45"
                         >
                           +
                         </span>
                       </summary>
-                      <p className="px-5 pb-5 text-sm leading-6 text-black/60">
+
+                      <p className="px-5 pb-5 text-sm leading-6 text-white/60">
                         {item.a}
                       </p>
                     </details>
@@ -150,16 +158,20 @@ export default function FAQPage() {
             ))}
           </div>
 
-          <div className="mt-15 flex justify-between rounded-4xl border border-black/10 bg-white p-6 text-center">
+          <div className="mt-14 flex flex-col items-center justify-between gap-5 rounded-3xl border border-white/10 bg-[#0f1a2b] p-6 text-center sm:flex-row sm:text-left">
             <div>
-            <p className="text-sm font-bold text-black">Still have questions?</p>
-            <p className="mt-1 text-sm  text-black/60 pl-8">
-              Our team is happy to help.
-            </p>
+              <p className="text-sm font-bold text-white">
+                Still have questions?
+              </p>
+
+              <p className="mt-1 text-sm text-white/60">
+                Our team is happy to help.
+              </p>
             </div>
+
             <Link
               href="/contact"
-              className=" inline-flex items-center justify-center rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-black/80"
+              className="inline-flex w-full items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-black transition-colors hover:bg-gray-100 sm:w-auto"
             >
               Contact us
             </Link>
@@ -167,23 +179,25 @@ export default function FAQPage() {
 
           <nav
             aria-label="Legal pages"
-            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-black/10 pt-6 text-sm font-semibold"
+            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm font-semibold"
           >
             <Link
               href="/privacy"
-              className="text-black transition-colors hover:text-black/60"
+              className="text-white transition-colors hover:text-white/60"
             >
               Privacy Policy
             </Link>
+
             <Link
               href="/terms"
-              className="text-black transition-colors hover:text-black/60"
+              className="text-white transition-colors hover:text-white/60"
             >
               Terms of Service
             </Link>
+
             <Link
               href="/cookies"
-              className="text-black transition-colors hover:text-black/60"
+              className="text-white transition-colors hover:text-white/60"
             >
               Cookie Policy
             </Link>
@@ -191,7 +205,7 @@ export default function FAQPage() {
 
           <Link
             href="/"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-black transition-colors hover:text-black/60"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white transition-colors hover:text-white/60"
           >
             ← Back to home
           </Link>

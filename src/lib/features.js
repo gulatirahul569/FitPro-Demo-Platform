@@ -1,5 +1,5 @@
 export const FEATURES = {
-  publicTrainerDirectory: false, // /trainers
+  publicTrainerDirectory: true, // /trainers
   publicVideoLibrary: false,     // /videos
   gyms: false,                   // /gyms and gym-owner area
   becomeTrainer: false,          // /become-trainer
