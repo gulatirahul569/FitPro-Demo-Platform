@@ -28,19 +28,20 @@ export default function AboutHero() {
           className="hidden h-full w-full object-cover object-center sm:block"
         />
 
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/30" />
+        {/* Dark overlay (flat on mobile so the text stays readable) */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/30 max-sm:bg-black/70 max-sm:bg-none" />
 
         {/* Bottom fade */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#070d17] to-transparent" />
       </div>
 
       {/* ================= HERO CONTENT ================= */}
-      <div className="relative mx-auto flex min-h-[100svh] max-w-full items-start justify-center px-5 pb-28 pt-[max(2.5rem,env(safe-area-inset-top))] sm:min-h-screen sm:items-center sm:justify-start sm:px-6 sm:py-16 lg:min-h-screen lg:px-12 lg:py-14">
-        <div className="w-full max-w-2xl md:mt-16">
+      <div className="relative mx-auto flex min-h-[100svh] max-w-full items-center justify-center px-6 pb-28 pt-[max(2.5rem,env(safe-area-inset-top))] sm:min-h-screen sm:items-center sm:justify-start sm:px-6 sm:py-16 lg:min-h-screen lg:px-12 lg:py-14">
+        {/* Mobile: block centred on screen, text left-aligned inside it */}
+        <div className="mx-auto w-full max-w-sm text-left sm:mx-0 sm:max-w-2xl md:mt-16">
           {/* Badge */}
           <div
-            className="animate-fade-up mb-10 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-2 text-[11px] font-medium text-white shadow-sm sm:mb-6 sm:px-4 sm:text-sm"
+            className="animate-fade-up mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-2 text-[11px] font-medium text-white shadow-sm sm:mb-6 sm:px-4 sm:text-sm"
             style={{ animationDelay: "0.1s" }}
           >
             <span className="relative flex h-2 w-2 shrink-0">
@@ -65,7 +66,7 @@ export default function AboutHero() {
 
           {/* Description */}
           <p
-            className="animate-fade-up mt-9 max-w-xl text-[14px] leading-[1.7] text-white/80 sm:mt-7 sm:text-lg sm:leading-7"
+            className="animate-fade-up mt-8 max-w-xl text-[14px] leading-[1.7] text-white/80 sm:mt-7 sm:text-lg sm:leading-7"
             style={{ animationDelay: "0.4s" }}
           >
             {BRAND.name} helps you request an in-home fitness demo. Share your

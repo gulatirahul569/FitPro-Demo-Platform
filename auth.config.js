@@ -13,6 +13,12 @@ export const authConfig = {
       const isAdminRoute = pathname.startsWith("/admin");
       const isUserRoute = pathname.startsWith("/user");
       const isGymOwnerRoute = pathname.startsWith("/gym-owner");
+      const isSalesRoute = pathname.startsWith("/sales");
+
+      if (isSalesRoute) {
+        if (!isLoggedIn) return false;
+        return role === "sales" || role === "admin";
+      }
 
       if (isTrainerRoute) {
         if (!isLoggedIn) return false;

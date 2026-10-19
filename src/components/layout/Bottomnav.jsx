@@ -12,7 +12,7 @@ import {
   LogIn,
   Package,
   CalendarPlus,
-  Phone,
+  Info,
 } from "lucide-react";
 import { FEATURES } from "@/lib/features";
 
@@ -21,9 +21,8 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   const isLoggedIn = status === "authenticated";
-  const role = session?.user?.role; // "user" | "trainer" | "gym-owner" | "admin" | "sales"
+  const role = session?.user?.role;
 
-  // Role maps 1:1 onto the route prefix, so this covers every account type.
   const profileHref = isLoggedIn ? `/${role}/dashboard` : "/login";
 
   const isDashboard =
@@ -33,33 +32,11 @@ export default function BottomNav() {
     pathname.startsWith("/sales/") ||
     pathname.startsWith("/gym-owner/");
 
-  // Every public page is dark (same rule as Navbar). Dashboards stay white.
   const isDarkPage = !isDashboard;
 
-  // Book a Demo is for visitors and customers, not staff
   const showBookDemo = !isLoggedIn || role === "user";
 
-  const tabs = [
-    {
-      href: "/",
-      label: "Home",
-      icon: Home,
-      isActive: pathname === "/",
-    },
-    {
-      href: "/packages",
-      label: "Packages",
-      icon: Package,
-      isActive: pathname.startsWith("/packages"),
-    },
-    showBookDemo && {
-      href: "/book-demo",
-      label: "Book Demo",
-      icon: CalendarPlus,
-      isActive: pathname.startsWith("/book-demo"),
-      highlight: true,
-    },
-    // Hidden by feature flags (code kept for later phases)
+  const optionalTabs = [
     FEATURES.publicTrainerDirectory && {
       href: "/trainers",
       label: "Trainers",
@@ -78,36 +55,75 @@ export default function BottomNav() {
       icon: Building2,
       isActive: pathname.startsWith("/gyms"),
     },
-    {
-      href: "/contact",
-      label: "Contact",
-      icon: Phone,
-      isActive: pathname.startsWith("/contact"),
-    },
-    {
-      href: profileHref,
-      label: isLoggedIn ? "Dashboard" : "Login",
-      icon: isLoggedIn ? User : LogIn,
-      isActive: isLoggedIn ? isDashboard : pathname === "/login",
-    },
-  ]
-    .filter(Boolean)
-    .slice(0, 5); // keep the bar to 5 tabs max
+  ].filter(Boolean);
+
+  const homeTab = {
+    href: "/",
+    label: "Home",
+    icon: Home,
+    isActive: pathname === "/",
+  };
+
+  const packagesTab = {
+    href: "/packages",
+    label: "Packages",
+    icon: Package,
+    isActive: pathname.startsWith("/packages"),
+  };
+
+  const aboutTab = {
+    href: "/about",
+    label: "About",
+    icon: Info,
+    isActive: pathname === "/about" || (pathname === "/" && false),
+  };
+
+  const demoTab = {
+    href: "/book-demo",
+    label: "Book Demo",
+    icon: CalendarPlus,
+    isActive: pathname.startsWith("/book-demo"),
+    highlight: true,
+  };
+
+  const profileTab = {
+    href: profileHref,
+    label: isLoggedIn ? "Dashboard" : "Login",
+    icon: isLoggedIn ? User : LogIn,
+    isActive: isLoggedIn ? isDashboard : pathname === "/login",
+  };
+
+  // Keep Book Demo in the center whenever it is available.
+  // Five tabs: Home | Packages | Book Demo | About | Login/Dashboard
+  const tabs = showBookDemo
+    ? [homeTab, packagesTab, demoTab, aboutTab, profileTab]
+    : [homeTab, packagesTab, aboutTab, profileTab];
+
+  // Use optional feature tabs only if there is room.
+  const finalTabs =
+    optionalTabs.length > 0
+      ? [
+          ...tabs.slice(0, 2),
+          ...optionalTabs.slice(0, Math.max(0, 5 - tabs.length)),
+          ...tabs.slice(2),
+        ].slice(0, 5)
+      : tabs;
 
   const activeColor = isDarkPage ? "text-white" : "text-black";
+
   const idleColor = isDarkPage ? "text-white/50" : "text-gray-400";
 
   return (
     <nav
       className={`fixed inset-x-0 bottom-0 z-50 border-t md:hidden ${
-        isDarkPage
-          ? "border-white/10 bg-[#070d17]"
-          : "border-gray-200 bg-white"
+        isDarkPage ? "border-white/10 bg-[#070d17]" : "border-gray-200 bg-white"
       }`}
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      style={{
+        paddingBottom: "env(safe-area-inset-bottom, 0px)",
+      }}
     >
-      <div className="flex h-16 items-stretch justify-between px-2">
-        {tabs.map((tab) => {
+      <div className="flex h-16 items-stretch justify-around px-1">
+        {finalTabs.map((tab) => {
           const Icon = tab.icon;
 
           if (tab.highlight) {
@@ -119,13 +135,12 @@ export default function BottomNav() {
               >
                 <span
                   className={`flex h-9 w-9 items-center justify-center rounded-full shadow-sm transition-transform ${
-                    isDarkPage
-                      ? "bg-white text-black"
-                      : "bg-black text-white"
+                    isDarkPage ? "bg-white text-black" : "bg-black text-white"
                   } ${tab.isActive ? "scale-110" : ""}`}
                 >
                   <Icon size={20} strokeWidth={2.4} />
                 </span>
+
                 <span
                   className={`text-[10px] font-semibold ${
                     isDarkPage ? "text-white" : "text-black"
@@ -150,7 +165,7 @@ export default function BottomNav() {
               />
 
               <span
-                className={`text-[10px] font-medium ${
+                className={`whitespace-nowrap text-[10px] font-medium ${
                   tab.isActive ? activeColor : idleColor
                 }`}
               >

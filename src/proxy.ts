@@ -6,5 +6,6 @@ export const config = {
     "/admin/:path*",
     "/user/:path*",
     "/gym-owner/:path*",
+    "/sales/:path*",
   ],
 };

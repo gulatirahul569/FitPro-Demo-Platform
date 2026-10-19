@@ -1,5 +1,6 @@
 import { auth } from "../../../auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import {
   getBookingsByTrainer,
   getUniqueClientsForTrainer,
@@ -9,8 +10,8 @@ import {
   getReviewsByTrainer,
   getTrainerRatingSummary,
 } from "@/lib/models/review";
+import { getDb } from "@/lib/db";
 import StarRating from "@/components/ui/StarRating";
-import Link from "next/link";
 import {
   Users,
   Calendar,
@@ -32,15 +33,28 @@ export default async function TrainerDashboardPage() {
   }
 
   const firstName = session.user.name?.split(" ")[0];
+  const db = await getDb();
 
-  const [allBookings, clients, profile, allReviews, ratingSummary] =
-    await Promise.all([
-      getBookingsByTrainer(session.user.id),
-      getUniqueClientsForTrainer(session.user.id),
-      getTrainerProfile(session.user.id),
-      getReviewsByTrainer(session.user.id),
-      getTrainerRatingSummary(session.user.id),
-    ]);
+  const [
+    allBookings,
+    clients,
+    profile,
+    allReviews,
+    ratingSummary,
+    demoBookings,
+  ] = await Promise.all([
+    getBookingsByTrainer(session.user.id),
+    getUniqueClientsForTrainer(session.user.id),
+    getTrainerProfile(session.user.id),
+    getReviewsByTrainer(session.user.id),
+    getTrainerRatingSummary(session.user.id),
+    db
+      .collection("demoBookings")
+      .find({ trainerId: session.user.id })
+      .sort({ date: 1, time: 1 })
+      .limit(5)
+      .toArray(),
+  ]);
 
   const recentBookings = allBookings.slice(0, 3).map((b) => ({
     client: b.userName,
@@ -75,7 +89,8 @@ export default async function TrainerDashboardPage() {
       value: upcomingCount,
       icon: Calendar,
       iconColor: "text-purple-600",
-      change: upcomingCount > 0 ? "Pending or confirmed" : "None scheduled",
+      change:
+        upcomingCount > 0 ? "Pending or confirmed" : "None scheduled",
     },
     {
       label: "This Month's Earnings",
@@ -127,9 +142,9 @@ export default async function TrainerDashboardPage() {
   return (
     <div>
       {/* Profile summary */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center text-xl font-bold">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-xl font-bold text-white">
             {firstName?.charAt(0)?.toUpperCase()}
           </div>
 
@@ -137,8 +152,9 @@ export default async function TrainerDashboardPage() {
             <h1 className="text-2xl font-bold text-black">
               Welcome back, {firstName}
             </h1>
-            <p className="text-gray-500 text-sm">
-              Here's what's happening with your training business.
+
+            <p className="text-sm text-gray-500">
+              Here&apos;s what&apos;s happening with your training business.
             </p>
           </div>
         </div>
@@ -151,7 +167,7 @@ export default async function TrainerDashboardPage() {
               <Link
                 key={action.href}
                 href={action.href}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 text-sm font-medium text-black hover:border-black transition-colors"
+                className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-black transition-colors hover:border-black"
               >
                 <Icon size={16} className={action.iconColor} />
                 <span className="hidden sm:inline">{action.label}</span>
@@ -162,57 +178,63 @@ export default async function TrainerDashboardPage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+      <div className="mb-8 grid grid-cols-2 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
 
           return (
             <div
               key={stat.label}
-              className="bg-white rounded-2xl border border-gray-200 p-5"
+              className="rounded-2xl border border-gray-200 bg-white p-5"
             >
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
                   <Icon size={20} className={stat.iconColor} />
                 </div>
               </div>
 
               <p className="text-2xl font-bold text-black">{stat.value}</p>
-              <p className="text-sm text-gray-500 mb-1">{stat.label}</p>
+
+              <p className="mb-1 text-sm text-gray-500">{stat.label}</p>
+
               <p className="text-xs text-gray-400">{stat.change}</p>
             </div>
           );
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Recent bookings */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 lg:col-span-2">
+          <div className="mb-5 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-black">
               Recent Bookings
             </h2>
 
             <Link
               href="/trainer/bookings"
-              className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-black transition-colors"
+              className="flex items-center gap-1 text-sm font-medium text-gray-500 transition-colors hover:text-black"
             >
               View all <ArrowRight size={14} />
             </Link>
           </div>
 
           {recentBookings.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-8">
+            <p className="py-8 text-center text-sm text-gray-400">
               No bookings yet.
             </p>
           ) : (
             <div className="flex flex-col divide-y divide-gray-100">
               {recentBookings.map((booking, i) => (
-                <div key={i} className="flex items-center justify-between py-3">
+                <div
+                  key={i}
+                  className="flex items-center justify-between py-3"
+                >
                   <div>
-                    <p className="font-medium text-black text-sm">
+                    <p className="text-sm font-medium text-black">
                       {booking.client}
                     </p>
+
                     <p className="text-xs text-gray-500">{booking.type}</p>
                   </div>
 
@@ -220,7 +242,7 @@ export default async function TrainerDashboardPage() {
                     <p className="text-sm text-gray-700">{booking.time}</p>
 
                     <span
-                      className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                         booking.status === "confirmed" ||
                         booking.status === "completed"
                           ? "bg-green-50 text-green-700"
@@ -239,22 +261,22 @@ export default async function TrainerDashboardPage() {
         </div>
 
         {/* Recent reviews */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-5">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
+          <div className="mb-5 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-black">
               Recent Reviews
             </h2>
 
             <Link
               href="/trainer/reviews"
-              className="flex items-center gap-1 text-sm font-medium text-gray-500 hover:text-black transition-colors"
+              className="flex items-center gap-1 text-sm font-medium text-gray-500 transition-colors hover:text-black"
             >
               View all <ArrowRight size={14} />
             </Link>
           </div>
 
           {recentReviews.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-8">
+            <p className="py-8 text-center text-sm text-gray-400">
               No reviews yet.
             </p>
           ) : (
@@ -262,16 +284,17 @@ export default async function TrainerDashboardPage() {
               {recentReviews.map((review, i) => (
                 <div
                   key={i}
-                  className="pb-4 border-b border-gray-100 last:border-0 last:pb-0"
+                  className="border-b border-gray-100 pb-4 last:border-0 last:pb-0"
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="font-medium text-black text-sm">
+                  <div className="mb-1 flex items-center justify-between">
+                    <p className="text-sm font-medium text-black">
                       {review.client}
                     </p>
+
                     <StarRating rating={review.rating} size={12} />
                   </div>
 
-                  <p className="text-xs text-gray-500 leading-relaxed">
+                  <p className="text-xs leading-relaxed text-gray-500">
                     {review.comment}
                   </p>
                 </div>
@@ -279,6 +302,77 @@ export default async function TrainerDashboardPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Demo requests */}
+      <div className="mt-6 rounded-2xl border border-gray-200 bg-white p-6">
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-black">
+            Demo Requests
+          </h2>
+
+          <Link
+            href="/trainer/demo-bookings"
+            className="flex items-center gap-1 text-sm font-medium text-gray-500 transition-colors hover:text-black"
+          >
+            View all <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        {demoBookings.length === 0 ? (
+          <p className="py-8 text-center text-sm text-gray-400">
+            No demo requests yet.
+          </p>
+        ) : (
+          <div className="flex flex-col divide-y divide-gray-100">
+            {demoBookings.map((booking) => (
+              <div
+                key={booking.bookingId}
+                className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <p className="text-sm font-semibold text-black">
+                    {booking.customerName}
+                  </p>
+
+                  <p className="mt-0.5 text-xs text-gray-500">
+                    {booking.date} · {booking.time}
+                  </p>
+
+                  {booking.address && (
+                    <p className="mt-0.5 line-clamp-1 text-xs text-gray-400">
+                      {booking.address}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                      booking.status === "Confirmed"
+                        ? "bg-green-50 text-green-700"
+                        : booking.status === "Completed"
+                        ? "bg-teal-50 text-teal-700"
+                        : booking.status === "Cancelled" ||
+                          booking.status === "No Show"
+                        ? "bg-gray-100 text-gray-500"
+                        : "bg-yellow-50 text-yellow-700"
+                    }`}
+                  >
+                    {booking.status}
+                  </span>
+
+                  <Link
+                    href={`/trainer/demo-bookings`}
+                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-black transition-colors hover:border-black"
+                  >
+                    View
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

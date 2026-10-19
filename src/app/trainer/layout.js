@@ -26,6 +26,7 @@ const navItems = [
   { href: "/trainer/videos", label: "My Videos", icon: Video },
   { href: "/trainer/clients", label: "My Clients", icon: Users },
   { href: "/trainer/bookings", label: "Bookings", icon: Calendar },
+  { href: "/trainer/demo-bookings", label: "Demo-Bookings", icon: Calendar },
   { href: "/trainer/reviews", label: "Reviews", icon: Star },
   { href: "/trainer/schedule", label: "Schedule", icon: Clock },
   { href: "/trainer/earnings", label: "Earnings", icon: Wallet },

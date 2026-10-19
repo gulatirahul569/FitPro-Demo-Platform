@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { setUserRole } from "@/lib/models/user";
 
-const VALID_ROLES = ["user", "trainer", "admin", "gym-owner"];
+const VALID_ROLES = ["user", "trainer", "admin", "gym-owner", "sales"];
 
 export async function PATCH(request, { params }) {
   const session = await auth();

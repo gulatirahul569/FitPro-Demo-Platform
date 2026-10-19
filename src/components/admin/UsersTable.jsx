@@ -7,6 +7,7 @@ const roleStyles = {
   user: "bg-gray-100 text-gray-700",
   trainer: "bg-blue-50 text-blue-700",
   "gym-owner": "bg-purple-50 text-purple-700",
+  sales: "bg-green-50 text-green-700",
   admin: "bg-black text-white",
 };
 
@@ -81,6 +82,7 @@ export default function UsersTable({ users, currentAdminId }) {
           <option value="">All Roles</option>
           <option value="user">Users</option>
           <option value="trainer">Trainers</option>
+          <option value="sales">Sales</option>
           <option value="gym-owner">Gym Owners</option>
           <option value="admin">Admins</option>
         </select>
@@ -171,6 +173,7 @@ export default function UsersTable({ users, currentAdminId }) {
                   >
                     <option value="user">User</option>
                     <option value="trainer">Trainer</option>
+                    <option value="sales">Sales</option>
                     <option value="gym-owner">Gym Owner</option>
                     <option value="admin">Admin</option>
                   </select>
