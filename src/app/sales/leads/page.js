@@ -1,13 +1,70 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, CalendarClock, UserRound } from "lucide-react";
 import { requireSales } from "@/lib/salesAuth";
 import { listLeads } from "@/lib/models/lead";
+import { getDb } from "@/lib/db";
 import { LEAD_STATUSES } from "@/lib/leadOptions";
 import StatusBadge from "@/components/sales/StatusBadge";
 import { fmtDate, fmtSlot, isDue } from "@/components/sales/format";
 
 export const metadata = { title: "Leads" };
+
+const card = "rounded-2xl border border-gray-200 bg-white";
+
+function getDemoMeta(status) {
+  switch (status) {
+    case "Confirmed":
+      return {
+        label: "Confirmed",
+        className: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        dot: "bg-emerald-500",
+      };
+
+    case "Completed":
+      return {
+        label: "Completed",
+        className: "bg-teal-50 text-teal-700 border-teal-200",
+        dot: "bg-teal-500",
+      };
+
+    case "Declined by Trainer":
+      return {
+        label: "Declined",
+        className: "bg-red-50 text-red-700 border-red-200",
+        dot: "bg-red-500",
+      };
+
+    case "Rescheduled":
+      return {
+        label: "Reschedule requested",
+        className: "bg-blue-50 text-blue-700 border-blue-200",
+        dot: "bg-blue-500",
+      };
+
+    case "Cancelled":
+    case "No Show":
+      return {
+        label: status,
+        className: "bg-gray-50 text-gray-600 border-gray-200",
+        dot: "bg-gray-400",
+      };
+
+    case "Pending Payment":
+      return {
+        label: "Pending payment",
+        className: "bg-amber-50 text-amber-700 border-amber-200",
+        dot: "bg-amber-500",
+      };
+
+    default:
+      return {
+        label: status || "Booked",
+        className: "bg-yellow-50 text-yellow-700 border-yellow-200",
+        dot: "bg-yellow-500",
+      };
+  }
+}
 
 export default async function SalesLeadsPage({ searchParams }) {
   const user = await requireSales();
@@ -17,7 +74,30 @@ export default async function SalesLeadsPage({ searchParams }) {
   const status = typeof params?.status === "string" ? params.status : "";
   const q = typeof params?.q === "string" ? params.q : "";
 
-  const leads = await listLeads({ status, q });
+  const [leads, db] = await Promise.all([
+    listLeads({ status, q }),
+    getDb(),
+  ]);
+
+  const leadIds = leads.map((lead) => lead.leadId);
+
+  const rawBookings = leadIds.length
+    ? await db
+        .collection("demoBookings")
+        .find({ leadId: { $in: leadIds } })
+        .sort({ createdAt: -1 })
+        .toArray()
+    : [];
+
+  const bookings = JSON.parse(JSON.stringify(rawBookings));
+
+  const latestBookingByLead = new Map();
+
+  bookings.forEach((booking) => {
+    if (!latestBookingByLead.has(booking.leadId)) {
+      latestBookingByLead.set(booking.leadId, booking);
+    }
+  });
 
   const filters = [
     { value: "", label: "All" },
@@ -29,138 +109,333 @@ export default async function SalesLeadsPage({ searchParams }) {
     const sp = new URLSearchParams();
     if (value) sp.set("status", value);
     if (q) sp.set("q", q);
+
     const qs = sp.toString();
     return qs ? `/sales/leads?${qs}` : "/sales/leads";
   };
 
   return (
-    <div>
-      <h1 className="mb-1 text-2xl font-bold text-black">Leads</h1>
-      <p className="mb-6 text-gray-500">
-        {leads.length} result{leads.length === 1 ? "" : "s"}
-      </p>
+    <div className="max-w-7xl">
+      {/* Header */}
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-black">
+            Leads
+          </h1>
 
-      {/* Search */}
-      <form method="get" className="mb-4 flex gap-2">
-        {status && <input type="hidden" name="status" value={status} />}
-        <div className="relative flex-1 md:max-w-sm">
-          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            name="q"
-            defaultValue={q}
-            placeholder="Search name, phone, email or lead ID"
-            className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-3 text-sm focus:border-black focus:outline-none"
-          />
+          <p className="mt-1 text-sm text-gray-500">
+            {leads.length} result{leads.length === 1 ? "" : "s"}
+            {q ? ` for “${q}”` : ""}
+          </p>
         </div>
-        <button className="rounded-lg bg-black px-5 text-sm font-semibold text-white hover:bg-gray-800">
-          Search
-        </button>
-      </form>
+      </div>
 
-      {/* Status filters */}
-      <div className="mb-6 flex gap-2 overflow-x-auto pb-1">
-        {filters.map((f) => (
-          <Link
-            key={f.label}
-            href={chipHref(f.value)}
-            className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
-              status === f.value
-                ? "border-black bg-black text-white"
-                : "border-gray-200 bg-white text-gray-600 hover:border-black/30"
-            }`}
+      {/* Search and filters */}
+      <div className="mb-6 space-y-4">
+        <form method="get" className="flex flex-col gap-3 sm:flex-row">
+          {status && (
+            <input type="hidden" name="status" value={status} />
+          )}
+
+          <div className="relative flex-1">
+            <Search
+              size={16}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+            />
+
+            <input
+              name="q"
+              defaultValue={q}
+              placeholder="Search name, phone, email or lead ID"
+              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm text-black placeholder:text-gray-400 focus:border-black focus:outline-none focus:ring-2 focus:ring-black/5"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="rounded-xl bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
           >
-            {f.label}
-          </Link>
-        ))}
+            Search
+          </button>
+        </form>
+
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {filters.map((f) => (
+            <Link
+              key={f.label}
+              href={chipHref(f.value)}
+              className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-semibold transition ${
+                status === f.value
+                  ? "border-black bg-black text-white"
+                  : "border-gray-200 bg-white text-gray-600 hover:border-black/30 hover:text-black"
+              }`}
+            >
+              {f.label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {leads.length === 0 ? (
-        <div className="rounded-2xl border border-gray-200 bg-white py-16 text-center text-sm text-gray-400">
-          No leads found.
+        <div className={`${card} py-20 text-center`}>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+            <Search size={20} className="text-gray-400" />
+          </div>
+
+          <p className="text-sm font-medium text-gray-700">
+            No leads found
+          </p>
+
+          <p className="mt-1 text-sm text-gray-400">
+            Try a different search term or status filter.
+          </p>
         </div>
       ) : (
         <>
-          {/* Desktop table */}
-          <div className="hidden overflow-x-auto rounded-2xl border border-gray-200 bg-white md:block">
+          {/* Desktop */}
+          <div className={`${card} hidden overflow-hidden md:block`}>
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-gray-100 text-xs uppercase tracking-wide text-gray-400">
+              <thead className="border-b border-gray-100 bg-gray-50/60 text-[11px] uppercase tracking-wider text-gray-500">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Lead</th>
-                  <th className="px-5 py-3 font-medium">Customer</th>
-                  <th className="px-5 py-3 font-medium">PIN</th>
-                  <th className="px-5 py-3 font-medium">Goal</th>
-                  <th className="px-5 py-3 font-medium">1st slot</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium">Follow-up</th>
-                  <th className="px-5 py-3 font-medium">Owner</th>
+                  <th className="px-6 py-3.5 font-semibold">Lead</th>
+                  <th className="px-6 py-3.5 font-semibold">Customer</th>
+                  <th className="px-6 py-3.5 font-semibold">Goal</th>
+                  <th className="px-6 py-3.5 font-semibold">Preferred slot</th>
+                  <th className="px-6 py-3.5 font-semibold">Lead status</th>
+                  <th className="px-6 py-3.5 font-semibold">Demo</th>
+                  <th className="px-6 py-3.5 font-semibold">Follow-up</th>
+                  <th className="px-6 py-3.5 font-semibold">Owner</th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-gray-100">
-                {leads.map((lead) => (
-                  <tr key={lead.leadId} className="transition-colors hover:bg-gray-50">
-                    <td className="px-5 py-3.5">
-                      <Link href={`/sales/leads/${lead.leadId}`} className="font-semibold text-black hover:underline">
-                        {lead.leadId}
-                      </Link>
-                      <p className="text-xs text-gray-400">{fmtDate(lead.createdAt)}</p>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <p className="font-medium text-black">
-                        {lead.name}
-                        {lead.isDuplicate && (
-                          <span className="ml-2 text-[10px] font-semibold text-orange-600">DUPLICATE</span>
+                {leads.map((lead) => {
+                  const booking = latestBookingByLead.get(lead.leadId);
+                  const demo = booking ? getDemoMeta(booking.status) : null;
+
+                  return (
+                    <tr
+                      key={lead.leadId}
+                      className="group transition-colors hover:bg-gray-50/70"
+                    >
+                      <td className="px-6 py-4">
+                        <Link
+                          href={`/sales/leads/${lead.leadId}`}
+                          className="font-semibold text-black group-hover:underline"
+                        >
+                          {lead.leadId}
+                        </Link>
+
+                        <p className="mt-0.5 text-xs text-gray-400">
+                          {fmtDate(lead.createdAt)}
+                        </p>
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-black">
+                            {lead.name}
+                          </p>
+
+                          {lead.isDuplicate && (
+                            <span className="rounded-md bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-orange-700">
+                              Duplicate
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="mt-0.5 text-xs text-gray-500">
+                          {lead.phone}
+                        </p>
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-600">
+                        {lead.goal}
+                      </td>
+
+                      <td className="whitespace-nowrap px-6 py-4 text-gray-600">
+                        {fmtSlot(lead.slots?.[0])}
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <StatusBadge status={lead.status} />
+                      </td>
+
+                      <td className="px-6 py-4">
+                        {booking && demo ? (
+                          <div className="min-w-[180px]">
+                            <div
+                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${demo.className}`}
+                            >
+                              <span
+                                className={`h-1.5 w-1.5 rounded-full ${demo.dot}`}
+                              />
+
+                              {demo.label}
+                            </div>
+
+                            <p className="mt-1.5 flex items-center gap-1.5 text-xs text-gray-500">
+                              <UserRound size={12} />
+                              {booking.trainerName}
+                            </p>
+
+                            {booking.status === "Rescheduled" &&
+                              booking.proposedDate && (
+                                <p className="mt-1 flex items-center gap-1.5 text-[11px] font-medium text-blue-600">
+                                  <CalendarClock size={12} />
+                                  {booking.proposedDate} ·{" "}
+                                  {booking.proposedTime}
+                                </p>
+                              )}
+                          </div>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full border border-dashed border-gray-300 px-2.5 py-1 text-[11px] font-medium text-gray-400">
+                            Not booked
+                          </span>
                         )}
-                      </p>
-                      <p className="text-xs text-gray-500">{lead.phone}</p>
-                    </td>
-                    <td className="px-5 py-3.5 text-gray-600">{lead.pinCode || "—"}</td>
-                    <td className="px-5 py-3.5 text-gray-600">{lead.goal}</td>
-                    <td className="whitespace-nowrap px-5 py-3.5 text-gray-600">{fmtSlot(lead.slots?.[0])}</td>
-                    <td className="px-5 py-3.5"><StatusBadge status={lead.status} /></td>
-                    <td className={`whitespace-nowrap px-5 py-3.5 ${isDue(lead) ? "font-semibold text-red-600" : "text-gray-600"}`}>
-                      {fmtDate(lead.nextFollowUpAt)}
-                    </td>
-                    <td className="px-5 py-3.5 text-gray-600">{lead.assignedToName || "Unassigned"}</td>
-                  </tr>
-                ))}
+                      </td>
+
+                      <td className="whitespace-nowrap px-6 py-4">
+                        <span
+                          className={
+                            isDue(lead)
+                              ? "font-semibold text-red-600"
+                              : "text-gray-600"
+                          }
+                        >
+                          {fmtDate(lead.nextFollowUpAt)}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4 text-gray-600">
+                        {lead.assignedToName || (
+                          <span className="text-gray-400">Unassigned</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
-          {/* Mobile cards */}
+          {/* Mobile */}
           <div className="space-y-3 md:hidden">
-            {leads.map((lead) => (
-              <Link
-                key={lead.leadId}
-                href={`/sales/leads/${lead.leadId}`}
-                className="block rounded-2xl border border-gray-200 bg-white p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold text-black">{lead.name}</p>
-                    <p className="text-xs text-gray-500">{lead.phone}</p>
+            {leads.map((lead) => {
+              const booking = latestBookingByLead.get(lead.leadId);
+              const demo = booking ? getDemoMeta(booking.status) : null;
+
+              return (
+                <Link
+                  key={lead.leadId}
+                  href={`/sales/leads/${lead.leadId}`}
+                  className={`${card} block p-5 transition hover:border-black/20 hover:shadow-sm`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="truncate font-semibold text-black">
+                          {lead.name}
+                        </p>
+
+                        {lead.isDuplicate && (
+                          <span className="rounded-md bg-orange-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-orange-700">
+                            Duplicate
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="mt-0.5 text-xs text-gray-500">
+                        {lead.phone}
+                      </p>
+                    </div>
+
+                    <StatusBadge status={lead.status} />
                   </div>
-                  <StatusBadge status={lead.status} />
-                </div>
 
-                <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-500">
-                  <p>PIN: <span className="text-gray-800">{lead.pinCode || "—"}</span></p>
-                  <p className="truncate">Goal: <span className="text-gray-800">{lead.goal}</span></p>
-                  <p>1st slot: <span className="text-gray-800">{fmtSlot(lead.slots?.[0])}</span></p>
-                  <p className={isDue(lead) ? "font-semibold text-red-600" : ""}>
-                    Follow-up: <span className={isDue(lead) ? "" : "text-gray-800"}>{fmtDate(lead.nextFollowUpAt)}</span>
+                  <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
+                    <div>
+                      <p className="text-gray-400">Preferred slot</p>
+
+                      <p className="mt-0.5 font-medium text-gray-800">
+                        {fmtSlot(lead.slots?.[0])}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-gray-400">Follow-up</p>
+
+                      <p
+                        className={`mt-0.5 font-medium ${
+                          isDue(lead) ? "text-red-600" : "text-gray-800"
+                        }`}
+                      >
+                        {fmtDate(lead.nextFollowUpAt)}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-gray-400">Goal</p>
+
+                      <p className="mt-0.5 truncate font-medium text-gray-800">
+                        {lead.goal}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-gray-400">Owner</p>
+
+                      <p className="mt-0.5 font-medium text-gray-800">
+                        {lead.assignedToName || "Unassigned"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Demo booking */}
+                  <div className="mt-4 border-t border-gray-100 pt-4">
+                    {booking && demo ? (
+                      <>
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="text-xs font-semibold text-black">
+                            {booking.trainerName}
+                          </p>
+
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-semibold ${demo.className}`}
+                          >
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${demo.dot}`}
+                            />
+
+                            {demo.label}
+                          </span>
+                        </div>
+
+                        {booking.status === "Rescheduled" &&
+                          booking.proposedDate && (
+                            <p className="mt-2 flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-2 text-[11px] font-medium text-blue-700">
+                              <CalendarClock size={13} />
+                              Proposed: {booking.proposedDate} ·{" "}
+                              {booking.proposedTime}
+                            </p>
+                          )}
+                      </>
+                    ) : (
+                      <p className="text-xs text-gray-400">
+                        No demo booking yet
+                      </p>
+                    )}
+                  </div>
+
+                  <p className="mt-4 text-[11px] text-gray-400">
+                    {lead.leadId} · {fmtDate(lead.createdAt)}
                   </p>
-                </div>
-
-                <p className="mt-3 text-[11px] text-gray-400">
-                  {lead.leadId} · {lead.assignedToName || "Unassigned"}
-                  {lead.isDuplicate && <span className="ml-2 font-semibold text-orange-600">DUPLICATE</span>}
-                </p>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </>
       )}
     </div>
   );
-}
+} 
