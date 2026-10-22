@@ -1,9 +1,6 @@
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
 import SessionWrapper from "@/components/providers/SessionWrapper";
-import ScrollToTop from "@/components/ui/ScrollToTop";
-import BottomNav from "@/components/layout/Bottomnav";
+import Chrome from "@/components/layout/Chrome";
 import { BRAND } from "@/lib/brand";
 
 export const metadata = {
@@ -26,16 +23,7 @@ export default function RootLayout({ children }) {
     <html lang="en" data-scroll-behavior="smooth" className="bg-[#070d17]">
       <body className="bg-[#070d17]">
         <SessionWrapper>
-          <Navbar />
-
-          {/* pb-16 keeps content clear of the fixed mobile BottomNav */}
-          <div className="bg-[#070d17] pb-16 md:pb-0">
-            {children}
-            <ScrollToTop />
-            <Footer />
-          </div>
-
-          <BottomNav />
+          <Chrome>{children}</Chrome>
         </SessionWrapper>
       </body>
     </html>
