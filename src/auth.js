@@ -1,14 +1,10 @@
-
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
 
 import { authConfig } from "../auth.config";
-import {
-  getUserByEmail,
-  createUser,
-} from "@/lib/models/user";
+import { getUserByEmail, createUser } from "@/lib/models/user";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -18,7 +14,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 
   providers: [
-    Google,
+    Google({
+      authorization: {
+        params: {
+          prompt: "select_account",
+        },
+      },
+    }),
 
     Credentials({
       credentials: {
@@ -40,10 +42,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        const passwordsMatch = await bcrypt.compare(
-          password,
-          user.password
-        );
+        const passwordsMatch = await bcrypt.compare(password, user.password);
 
         if (!passwordsMatch) {
           return null;
@@ -86,9 +85,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const email = user?.email || token.email;
 
       if (email) {
-        const dbUser = await getUserByEmail(
-          String(email).trim().toLowerCase()
-        );
+        const dbUser = await getUserByEmail(String(email).trim().toLowerCase());
 
         if (dbUser) {
           token.id = dbUser._id.toString();
