@@ -170,6 +170,11 @@ export async function updateDemoBookingStatus(
     throw new Error("Invalid status");
   }
 
+  // Rescheduled needs a proposed slot, so it must go through the trainer reschedule route.
+  if (status === "Rescheduled") {
+    throw new Error("Use the trainer reschedule flow to set Rescheduled.");
+  }
+
   const db = await getDb();
   const now = new Date();
 
@@ -181,6 +186,10 @@ export async function updateDemoBookingStatus(
         $set: {
           status,
           updatedAt: now,
+        },
+        $unset: {
+          proposedDate: "",
+          proposedTime: "",
         },
         $push: {
           history: {
@@ -195,7 +204,6 @@ export async function updateDemoBookingStatus(
 
   return plain(result);
 }
-
 export async function getDemoBookingStats() {
   const db = await getDb();
   await ensureIndexes(db);

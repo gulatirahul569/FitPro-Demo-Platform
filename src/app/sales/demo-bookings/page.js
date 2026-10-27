@@ -3,15 +3,20 @@ import { redirect } from "next/navigation";
 import {
   AlertTriangle,
   Calendar,
+  CalendarClock,
   Clock,
   MapPin,
   User,
 } from "lucide-react";
+import SalesRescheduleActions from "@/components/sales/SalesRescheduleActions";
 import { requireSales } from "@/lib/salesAuth";
-import { listDemoBookings } from "@/lib/models/demoBooking";
-import { DEMO_BOOKING_STATUSES } from "@/lib/models/demoBooking";
+import {
+  listDemoBookings,
+  DEMO_BOOKING_STATUSES,
+} from "@/lib/models/demoBooking";
 
 export const metadata = { title: "Demo Bookings" };
+export const dynamic = "force-dynamic";
 
 function getStatusStyle(status) {
   switch (status) {
@@ -33,6 +38,12 @@ function getStatusStyle(status) {
   }
 }
 
+function getStatusLabel(status) {
+  return status === "Rescheduled"
+    ? "Reschedule requested"
+    : status;
+}
+
 export default async function DemoBookingsPage({ searchParams }) {
   const user = await requireSales();
 
@@ -40,14 +51,19 @@ export default async function DemoBookingsPage({ searchParams }) {
 
   const params = await searchParams;
 
-  let date = typeof params?.date === "string" ? params.date : "";
-  const status = typeof params?.status === "string" ? params.status : "";
+  const dateParam =
+    typeof params?.date === "string" ? params.date : "";
 
-  if (date === "today") {
-    date = new Date().toLocaleDateString("en-CA", {
-      timeZone: "Asia/Kolkata",
-    });
-  }
+  const status =
+    typeof params?.status === "string" ? params.status : "";
+
+  const isTodayFilter = dateParam === "today";
+
+  const date = isTodayFilter
+    ? new Date().toLocaleDateString("en-CA", {
+        timeZone: "Asia/Kolkata",
+      })
+    : dateParam;
 
   const bookings = await listDemoBookings({ status, date });
 
@@ -58,7 +74,8 @@ export default async function DemoBookingsPage({ searchParams }) {
       </h1>
 
       <p className="mb-6 text-gray-500">
-        {bookings.length} booking{bookings.length === 1 ? "" : "s"}
+        {bookings.length} booking
+        {bookings.length === 1 ? "" : "s"}
       </p>
 
       {/* Filters */}
@@ -77,7 +94,7 @@ export default async function DemoBookingsPage({ searchParams }) {
         <Link
           href="/sales/demo-bookings?date=today"
           className={`rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors ${
-            date && !status
+            isTodayFilter && !status
               ? "border-black bg-black text-white"
               : "border-gray-200 bg-white text-gray-600 hover:border-black/30"
           }`}
@@ -95,7 +112,7 @@ export default async function DemoBookingsPage({ searchParams }) {
                 : "border-gray-200 bg-white text-gray-600 hover:border-black/30"
             }`}
           >
-            {s}
+            {getStatusLabel(s)}
           </Link>
         ))}
       </div>
@@ -107,133 +124,176 @@ export default async function DemoBookingsPage({ searchParams }) {
         </div>
       ) : (
         <div className="space-y-3">
-          {bookings.map((booking) => (
-            <div
-              key={booking.bookingId}
-              className="rounded-2xl border border-gray-200 bg-white p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-black/20 hover:shadow-lg"
-            >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold text-black">
-                    {booking.customerName}
-                  </p>
+          {bookings.map((booking) => {
+            const hasProposal = Boolean(
+              booking.proposedDate && booking.proposedTime
+            );
 
-                  <p className="mt-1 text-xs text-gray-500">
-                    {booking.bookingId} ·{" "}
-                    <Link
-                      href={`/sales/leads/${booking.leadId}`}
-                      className="font-medium text-gray-600 underline-offset-2 hover:text-black hover:underline"
-                    >
-                      Lead {booking.leadId}
-                    </Link>
-                  </p>
-                </div>
-
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
-                    booking.status
-                  )}`}
-                >
-                  {booking.status}
-                </span>
-              </div>
-
-              {/* Trainer declined */}
-              {booking.status === "Declined by Trainer" && (
-                <div className="mt-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-                  <AlertTriangle
-                    size={17}
-                    className="mt-0.5 shrink-0"
-                  />
-
-                  <p>
-                    The trainer declined this demo. Create a new booking with
-                    another available trainer.
-                  </p>
-                </div>
-              )}
-
-              {/* Trainer proposed a reschedule */}
-              {booking.status === "Rescheduled" &&
-                booking.proposedDate &&
-                booking.proposedTime && (
-                  <div className="mt-4 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
-                    <p className="font-semibold">
-                      Trainer proposed a new time
+            return (
+              <div
+                key={booking.bookingId}
+                className="rounded-2xl border border-gray-200 bg-white p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-black/20 hover:shadow-lg"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-black">
+                      {booking.customerName}
                     </p>
 
-                    <p className="mt-1">
-                      {booking.proposedDate} at {booking.proposedTime}
+                    <p className="mt-1 text-xs text-gray-500">
+                      {booking.bookingId} ·{" "}
+                      <Link
+                        href={`/sales/leads/${booking.leadId}`}
+                        className="font-medium text-gray-600 underline-offset-2 hover:text-black hover:underline"
+                      >
+                        Lead {booking.leadId}
+                      </Link>
                     </p>
+                  </div>
 
-                    <p className="mt-1 text-xs">
-                      Contact the customer to confirm. Once confirmed, update
-                      the booking date and time, then set the status to
-                      Confirmed.
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
+                      booking.status
+                    )}`}
+                  >
+                    {getStatusLabel(booking.status)}
+                  </span>
+                </div>
+
+                {/* Trainer declined */}
+                {booking.status === "Declined by Trainer" && (
+                  <div className="mt-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                    <AlertTriangle
+                      size={17}
+                      className="mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+
+                    <p>
+                      The trainer declined this demo. Create a new
+                      booking with another available trainer.
                     </p>
                   </div>
                 )}
 
-              <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-4">
-                <p className="flex items-center gap-2">
-                  <User size={15} className="text-gray-400" />
+                {/* Trainer proposed a reschedule */}
+                {booking.status === "Rescheduled" &&
+                  (hasProposal ? (
+                    <SalesRescheduleActions
+                      key={`${booking.bookingId}-${booking.proposedDate}-${booking.proposedTime}`}
+                      bookingId={booking.bookingId}
+                      proposedDate={booking.proposedDate}
+                      proposedTime={booking.proposedTime}
+                    />
+                  ) : (
+                    <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                      <AlertTriangle
+                        size={17}
+                        className="mt-0.5 shrink-0"
+                        aria-hidden="true"
+                      />
 
-                  <span>
-                    Trainer:{" "}
-                    <span className="font-medium text-black">
-                      {booking.trainerName}
+                      <p>
+                        This booking is marked as rescheduled, but no
+                        proposed time was saved. A new trainer
+                        proposal is needed before approval.
+                      </p>
+                    </div>
+                  ))}
+
+                <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-gray-600 sm:grid-cols-2 lg:grid-cols-4">
+                  <p className="flex items-center gap-2">
+                    <User
+                      size={15}
+                      className="shrink-0 text-gray-400"
+                      aria-hidden="true"
+                    />
+
+                    <span>
+                      Trainer:{" "}
+                      <span className="font-medium text-black">
+                        {booking.trainerName}
+                      </span>
                     </span>
-                  </span>
-                </p>
+                  </p>
 
-                <p className="flex items-center gap-2">
-                  <Calendar size={15} className="text-gray-400" />
+                  <p className="flex items-center gap-2">
+                    <Calendar
+                      size={15}
+                      className="shrink-0 text-gray-400"
+                      aria-hidden="true"
+                    />
 
-                  <span>
-                    Date:{" "}
-                    <span className="font-medium text-black">
-                      {booking.date}
+                    <span>
+                      Date:{" "}
+                      <span className="font-medium text-black">
+                        {booking.date}
+                      </span>
                     </span>
-                  </span>
-                </p>
+                  </p>
 
-                <p className="flex items-center gap-2">
-                  <Clock size={15} className="text-gray-400" />
+                  <p className="flex items-center gap-2">
+                    <Clock
+                      size={15}
+                      className="shrink-0 text-gray-400"
+                      aria-hidden="true"
+                    />
 
-                  <span>
-                    Time:{" "}
-                    <span className="font-medium text-black">
-                      {booking.time}
+                    <span>
+                      Time:{" "}
+                      <span className="font-medium text-black">
+                        {booking.time}
+                      </span>
                     </span>
-                  </span>
-                </p>
+                  </p>
 
-                <p>
-                  Payment:{" "}
-                  <span className="font-medium text-black">
-                    {booking.paymentStatus}
-                  </span>
-                </p>
+                  <p>
+                    Payment:{" "}
+                    <span className="font-medium text-black">
+                      {booking.paymentStatus}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Proposed slot, always visible when present */}
+                {hasProposal && (
+                  <p className="mt-3 flex items-center gap-2 rounded-xl bg-blue-50 px-3 py-2 text-sm text-blue-800">
+                    <CalendarClock
+                      size={15}
+                      className="shrink-0"
+                      aria-hidden="true"
+                    />
+
+                    <span>
+                      Proposed:{" "}
+                      <span className="font-semibold">
+                        {booking.proposedDate} at{" "}
+                        {booking.proposedTime} IST
+                      </span>
+                    </span>
+                  </p>
+                )}
+
+                {booking.address && (
+                  <p className="mt-3 flex items-start gap-2 text-sm text-gray-600">
+                    <MapPin
+                      size={15}
+                      className="mt-0.5 shrink-0 text-gray-400"
+                      aria-hidden="true"
+                    />
+
+                    <span>{booking.address}</span>
+                  </p>
+                )}
+
+                {booking.notes && (
+                  <p className="mt-3 whitespace-pre-wrap rounded-xl bg-gray-50 p-3 text-sm leading-6 text-gray-600">
+                    {booking.notes}
+                  </p>
+                )}
               </div>
-
-              {booking.address && (
-                <p className="mt-3 flex items-start gap-2 text-sm text-gray-600">
-                  <MapPin
-                    size={15}
-                    className="mt-0.5 shrink-0 text-gray-400"
-                  />
-
-                  <span>{booking.address}</span>
-                </p>
-              )}
-
-              {booking.notes && (
-                <p className="mt-3 rounded-xl bg-gray-50 p-3 text-sm leading-6 text-gray-600">
-                  {booking.notes}
-                </p>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
