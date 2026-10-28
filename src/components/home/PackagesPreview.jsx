@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { ArrowRight, Home, User } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
-import { MAIN_PACKAGES } from "@/lib/packages";
+import { listPackages } from "@/lib/models/package";
 import PackageImage from "@/components/packages/PackageImage";
 
-export default function PackagesPreview() {
+// Server component: reads active DEMO packages straight from the database.
+export default async function PackagesPreview() {
+  const packages = await listPackages({ type: "demo" });
+
+  // Nothing to show (e.g. all demo packages switched off in admin): hide the section.
+  if (packages.length === 0) return null;
+
   return (
     <section
       id="packages"
@@ -24,27 +30,33 @@ export default function PackagesPreview() {
         </Reveal>
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-6">
-          {MAIN_PACKAGES.map((pkg, index) => (
+          {packages.map((pkg, index) => (
             <Reveal key={pkg.slug} delay={index * 120} className="h-full">
-              <div className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1a2b] transition-all duration-300 hover:-translate-y-1 hover:border-white/30 hover:shadow-lg">
-                <div className="h-36 overflow-hidden bg-[#0a1220] sm:h-44 md:h-48">
-                  <PackageImage
-                    src={pkg.image}
-                    alt={pkg.name}
-                    width={800}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
+              {/* Full-card image: it fills the whole card and the text sits on top. */}
+              <div className="group relative isolate flex h-full min-h-[340px] min-w-0 flex-col justify-end overflow-hidden rounded-2xl border border-white/10 bg-[#0f1a2b] transition-all duration-300 hover:-translate-y-1 hover:border-white/30 hover:shadow-lg sm:min-h-[400px] md:min-h-[440px]">
+                <PackageImage
+                  src={pkg.image}
+                  alt={pkg.name}
+                  sizes="(min-width: 768px) 25vw, 50vw"
+                  className="absolute inset-0 -z-20 h-full w-full transition-transform duration-700 group-hover:scale-105"
+                />
 
-                <div className="flex min-w-0 flex-1 flex-col px-3 pb-4 pt-3 sm:px-4 md:p-5">
+                {/* Dark fade so the text stays readable on any photo */}
+                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black via-black/70 to-black/5" />
+
+                <span className="absolute left-3 top-3 rounded-md bg-white px-2.5 py-1 text-[11px] font-bold text-black">
+                  Demo
+                </span>
+
+                <div className="min-w-0 px-3 pb-4 pt-3 sm:px-4 md:p-5">
                   <h3 className="truncate text-sm font-bold text-white sm:text-base md:overflow-visible md:whitespace-normal md:text-lg">
                     {pkg.name}
                   </h3>
-                  <p className="mt-1 line-clamp-2 break-words text-xs leading-5 text-white/60 sm:text-sm md:line-clamp-none">
+                  <p className="mt-1 line-clamp-2 break-words text-xs leading-5 text-white/70 sm:text-sm md:line-clamp-none">
                     {pkg.description}
                   </p>
 
-                  <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-white/55 sm:text-xs md:mt-4 md:gap-x-4 md:gap-y-2">
+                  <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-white/70 sm:text-xs md:mt-4 md:gap-x-4 md:gap-y-2">
                     <span className="flex min-w-0 items-center gap-1.5">
                       <User size={13} className="shrink-0" />
                       <span className="truncate md:overflow-visible">
@@ -59,7 +71,7 @@ export default function PackagesPreview() {
                     </span>
                   </div>
 
-                  <div className="mt-auto pt-4 md:pt-5">
+                  <div className="pt-4 md:pt-5">
                     <Link
                       href={`/book-demo?package=${pkg.slug}`}
                       className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-3 py-2.5 text-xs font-bold text-black transition-colors hover:bg-gray-100 sm:px-5 sm:text-sm md:py-3"
