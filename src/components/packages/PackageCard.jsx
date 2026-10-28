@@ -10,7 +10,7 @@ export default function PackageCard({ pkg, isDemo = false, showPrice = true }) {
       <PackageImage
         src={pkg.image}
         alt={pkg.name}
-        width={700}
+        sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
         className="absolute inset-0 -z-20 h-full w-full transition-transform duration-700 will-change-transform group-hover:scale-105"
       />
 

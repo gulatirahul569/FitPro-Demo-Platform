@@ -4,10 +4,10 @@ import { CheckCircle2, ArrowRight } from "lucide-react";
 export const metadata = { title: "Request Received" };
 
 const steps = [
-  "We review your details and check trainer availability in your area.",
-  "Our sales team contacts you to confirm a time slot.",
-  "Once agreed, you receive a payment link for the demo booking fee.",
-  "After payment, your demo is confirmed and your trainer is assigned.",
+  "We review your details and look for a trainer available in your area at your preferred times, in the order you chose them.",
+  "Our sales team contacts you within 24 hours to confirm your demo at your priority time.",
+  "If the trainer suggests a different time, we email you and get in touch with you.",
+  "If you agree to the new time, the same trainer will visit you. If not, we will assign another trainer.",
 ];
 
 export default async function DemoRequestSuccessPage({ searchParams }) {
@@ -23,7 +23,8 @@ export default async function DemoRequestSuccessPage({ searchParams }) {
 
         <h1 className="mt-6 text-3xl font-black">Request Submitted!</h1>
         <p className="mt-2 text-sm text-white/60">
-          Your request has been received. Our team will contact you shortly.
+          Your payment is safe with us and your demo request has been
+          received. Our sales team will contact you within 24 hours.
         </p>
         {id && (
           <p className="mt-3 text-xs text-white/50">
@@ -44,7 +45,7 @@ export default async function DemoRequestSuccessPage({ searchParams }) {
             ))}
           </ol>
           <p className="mt-5 border-t border-white/10 pt-4 text-xs text-white/50">
-            Your request is not a confirmed booking until a trainer and time are
+            Your demo is confirmed once a trainer is assigned and the time is
             agreed with you.
           </p>
         </div>

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createLead } from "@/lib/models/lead";
+import { getPackageBySlug } from "@/lib/models/package";
 import { FITNESS_GOALS } from "@/lib/leadOptions";
+import { validateSlots } from "@/lib/validateSlots";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -19,10 +21,6 @@ function normalizePhone(raw) {
   return digits;
 }
 
-function todayIST() {
-  return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-}
-
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -38,6 +36,7 @@ export async function POST(request) {
     const address = clean(body.address, 300);
     const goal = clean(body.goal, 60);
     const notes = clean(body.notes, 500);
+    const packageSlug = clean(body.packageSlug, 80);
 
     if (name.length < 2) {
       return NextResponse.json({ error: "Please enter your full name." }, { status: 400 });
@@ -67,25 +66,39 @@ export async function POST(request) {
       );
     }
 
-    // Three ranked slots
+    // Package is optional, but if one is sent it must exist and be active.
+    let pkg = null;
+    if (packageSlug) {
+      pkg = await getPackageBySlug(packageSlug);
+      if (!pkg || !pkg.active) {
+        return NextResponse.json(
+          { error: "The selected package is no longer available. Please choose another." },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Slots: first choice required, second and third optional (see validateSlots).
+    const slotError = validateSlots(body.slots);
+    if (slotError) {
+      return NextResponse.json({ error: slotError }, { status: 400 });
+    }
+
     const rawSlots = Array.isArray(body.slots) ? body.slots.slice(0, 3) : [];
-    const today = todayIST();
     const slots = [];
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < rawSlots.length; i++) {
       const s = rawSlots[i] || {};
+      if (!s.date && !s.time) continue; // empty optional choice
+
       if (!DATE_RE.test(s.date || "") || !TIME_RE.test(s.time || "")) {
         return NextResponse.json(
-          { error: `Please choose a date and time for preferred slot ${i + 1}.` },
+          { error: `Preferred slot ${i + 1} has an invalid date or time.` },
           { status: 400 }
         );
       }
-      if (s.date < today) {
-        return NextResponse.json(
-          { error: `Preferred slot ${i + 1} is in the past.` },
-          { status: 400 }
-        );
-      }
+
+      // priority keeps the customer's original ranking (1, 2 or 3)
       slots.push({ priority: i + 1, date: s.date, time: s.time });
     }
 
@@ -100,6 +113,10 @@ export async function POST(request) {
       goal,
       notes,
       slots,
+      // Taken from the database, never from the browser
+      packageSlug: pkg ? pkg.slug : "",
+      packageName: pkg ? pkg.name : "",
+      packageType: pkg ? pkg.type : "",
       consent: true,
       consentAt: new Date(),
       source: cleanTag(body.source) || "direct",

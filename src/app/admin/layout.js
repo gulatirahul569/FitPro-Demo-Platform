@@ -18,6 +18,7 @@ import {
   ArrowLeft,
   LogOut,
   Menu,
+  Package,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -38,6 +39,9 @@ const navItems = [
     label: "Users",
     icon: Users,
   },
+  { href: "/admin/packages",
+    label: "Packages",
+    icon: Package },
   {
     href: "/admin/trainers",
     label: "Trainers",
@@ -110,9 +114,7 @@ export default function AdminLayout({ children }) {
 
       <aside
         className={`fixed lg:sticky top-0 bottom-16 md:bottom-0 lg:h-screen left-0 w-64 bg-white border-r border-gray-200 flex flex-col z-40 transition-transform duration-300 ${
-          sidebarOpen
-            ? "translate-x-0"
-            : "-translate-x-full lg:translate-x-0"
+          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         {/* =================================================
@@ -120,10 +122,7 @@ export default function AdminLayout({ children }) {
         ================================================== */}
 
         <div className="h-18 flex items-center justify-between px-6 border-b border-gray-100">
-          <Link
-            href="/"
-            className="text-xl font-extrabold text-black"
-          >
+          <Link href="/" className="text-xl font-extrabold text-black">
             FIT<span className="text-gray-400">PRO</span>
           </Link>
 
@@ -203,18 +202,14 @@ export default function AdminLayout({ children }) {
             <Menu size={24} />
           </button>
 
-          <span className="ml-4 font-semibold text-black">
-            Admin Dashboard
-          </span>
+          <span className="ml-4 font-semibold text-black">Admin Dashboard</span>
         </div>
 
         {/* =================================================
             PAGE CONTENT
         ================================================== */}
 
-        <main className="p-6 md:p-8">
-          {children}
-        </main>
+        <main className="p-6 md:p-8">{children}</main>
       </div>
     </div>
   );

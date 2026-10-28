@@ -1,5 +1,5 @@
-
 import DemoRequestForm from "@/components/booking/DemoRequestForm";
+import { listPackages } from "@/lib/models/package";
 
 export const metadata = {
   title: "Request a Demo",
@@ -13,10 +13,15 @@ export default async function BookDemoPage({ searchParams }) {
   const pick = (key) =>
     typeof params?.[key] === "string" ? params[key] : "";
 
+  // Active packages only, straight from the database.
+  const packages = await listPackages();
+
   return (
     <main className="min-h-screen bg-[#060b16] px-4 py-10 text-white sm:px-6 md:py-16">
       <div className="mx-auto max-w-6xl">
         <DemoRequestForm
+          packages={packages}
+          initialPackage={pick("package")}
           source={pick("utm_source") || pick("source")}
           medium={pick("utm_medium")}
           campaign={pick("utm_campaign")}

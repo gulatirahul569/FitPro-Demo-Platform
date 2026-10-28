@@ -1,17 +1,13 @@
+import Image from "next/image";
 import { Dumbbell } from "lucide-react";
 
-// Pexels serves the full original unless you ask for a smaller one.
-function optimize(src, width) {
-  if (!src || !src.includes("images.pexels.com")) return src;
-  const base = src.split("?")[0];
-  return `${base}?auto=compress&cs=tinysrgb&w=${width}`;
-}
-
+// Fills its nearest `relative` parent. Next.js resizes and compresses the image
+// and serves only the size the screen needs, based on the `sizes` prop.
 export default function PackageImage({
   src,
   alt,
   className = "",
-  width = 800,
+  sizes = "100vw",
   priority = false,
 }) {
   if (!src) {
@@ -25,11 +21,12 @@ export default function PackageImage({
   }
 
   return (
-    <img
-      src={optimize(src, width)}
+    <Image
+      src={src}
       alt={alt}
-      loading={priority ? "eager" : "lazy"}
-      decoding="async"
+      fill
+      sizes={sizes}
+      priority={priority}
       className={`object-cover ${className}`}
     />
   );

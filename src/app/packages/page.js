@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import PackagesView from "@/components/packages/PackagesView";
 import PackageImage from "@/components/packages/PackageImage";
+import { getImageProps } from "next/image";
 import {
   PACKAGES_BANNER_IMAGE,
   PACKAGES_BANNER_IMAGE_MOBILE,
@@ -15,23 +16,30 @@ export const metadata = {
 };
 
 export default function PackagesPage() {
+  const common = {
+    alt: "Personal training",
+    fill: true,
+    sizes: "100vw",
+    priority: true,
+  };
+
+  const desktop = PACKAGES_BANNER_IMAGE
+    ? getImageProps({ ...common, src: PACKAGES_BANNER_IMAGE })
+    : null;
+  const mobile = PACKAGES_BANNER_IMAGE_MOBILE
+    ? getImageProps({ ...common, src: PACKAGES_BANNER_IMAGE_MOBILE })
+    : null;
   return (
     <main className="bg-[#070d17] pb-20 text-white">
       {/* ================= TOP BANNER ================= */}
       <section className="relative isolate overflow-hidden border-b border-white/10 bg-gradient-to-br from-[#0f1a2b] via-[#0a1220] to-black">
-        {PACKAGES_BANNER_IMAGE && (
+        {desktop && (
           <picture>
-            {PACKAGES_BANNER_IMAGE_MOBILE && (
-              <source
-                media="(max-width: 767px)"
-                srcSet={PACKAGES_BANNER_IMAGE_MOBILE}
-              />
+            {mobile && (
+              <source media="(max-width: 767px)" srcSet={mobile.props.srcSet} />
             )}
-            <PackageImage
-              src={PACKAGES_BANNER_IMAGE}
-              alt="Personal training"
-              width={1600}
-              priority
+            <img
+              {...desktop.props}
               className="absolute inset-0 -z-10 h-full w-full object-contain object-right"
             />
           </picture>
@@ -85,8 +93,7 @@ export default function PackagesPage() {
 
           <div className="relative z-10 p-8 md:p-14">
             <h2 className="text-3xl font-bold md:text-4xl">
-              Stronger. Healthier.{" "}
-              <span className="text-white">Happier.</span>
+              Stronger. Healthier. <span className="text-white">Happier.</span>
             </h2>
             <p className="mt-2 max-w-md text-sm leading-6 text-white/70">
               Your goals. Our support. Real results. Book a demo and let our

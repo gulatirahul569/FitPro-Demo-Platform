@@ -1,4 +1,3 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -7,6 +6,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "images.pexels.com",
         pathname: "/photos/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
       },
     ],
   },
