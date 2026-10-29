@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
-/* Brand tokens (black and white theme) */
+/* Brand tokens (light theme: lavender + orange accent) */
 @theme {
-  --color-ink: #111111;
+  --color-ink: #0f172a;
   --color-surface: #ffffff;
   --color-surface-muted: #f9fafb;
+  --color-lavender: #e6e8f2;
+  --color-accent: #f97316;
 }
 
 html {
@@ -17,16 +19,14 @@ body {
   color: var(--color-ink);
 }
 
-::selection {
-  background: #111111;
-  color: #ffffff;
-}
+
 
 /* Visible keyboard focus */
 :focus-visible {
-  outline: 2px solid #111111;
+  outline: 2px solid #f97316;
   outline-offset: 2px;
 }
+
 /* =========================
    Existing animations
 ========================= */
@@ -75,6 +75,70 @@ body {
 
 .animate-soft-bounce {
   animation: softBounce 2s ease-in-out infinite;
+}
+
+/* =========================
+   New animations (light theme redesign)
+   All use transform/opacity only, so they stay GPU friendly
+========================= */
+
+/* Hero background slow zoom */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.08);
+  }
+}
+
+.animate-hero-zoom {
+  animation: hero-zoom 18s ease-out forwards;
+  will-change: transform;
+}
+
+/* DemoJourney intro visual */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes step-glow {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  12%,
+  28% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  40% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.animate-float-slow {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: float-y 8s ease-in-out infinite;
+}
+
+.animate-step-glow {
+  animation: step-glow 4.8s ease-in-out infinite;
 }
 
 /* =========================
@@ -133,11 +197,20 @@ body {
   .animate-fade-up,
   .animate-kenburns,
   .animate-soft-bounce,
+  .animate-hero-zoom,
+  .animate-float-slow,
+  .animate-float-slower,
+  .animate-step-glow,
   .video-marquee-track {
     animation: none !important;
   }
 
   .animate-fade-up {
     opacity: 1;
+  }
+
+  /* Keep the step dots visible when animation is off */
+  .animate-step-glow {
+    opacity: 0;
   }
 }

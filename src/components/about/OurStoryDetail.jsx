@@ -1,8 +1,7 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import { BRAND } from "@/lib/brand";
 import PackageImage from "@/components/packages/PackageImage";
+import { SpinStar } from "@/components/ui/Decor";
 
 const principles = [
   {
@@ -41,30 +40,32 @@ const principles = [
 
 export default function OurStoryDetail() {
   return (
-    <section className="bg-[#070d17] px-8 py-8 sm:py-14 md:px-8 lg:px-12">
+    <section className="relative overflow-hidden bg-[#e6e8f2] px-8 py-8 sm:py-14 md:px-8 lg:px-12">
       <div className="mx-auto max-w-full">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Left: heading and intro */}
           <Reveal>
             <div>
-              <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-white/40 sm:text-xs">
+              <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-600 sm:text-xs">
                 Our Story
               </p>
 
-              <h2 className="text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">
+              <h2 className="text-3xl font-black leading-tight text-slate-900 sm:text-4xl md:text-5xl">
                 Making quality fitness guidance
                 <br />
-                <span className="text-white/30">easier to access.</span>
+                <span className="bg-gradient-to-r from-slate-500 to-slate-400 bg-clip-text text-transparent">
+                  easier to access.
+                </span>
               </h2>
 
-              <p className="mt-6 max-w-xl text-sm leading-7 text-white/65 sm:text-base sm:leading-8">
+              <p className="mt-6 max-w-xl text-sm leading-7 text-slate-600 sm:text-base sm:leading-8">
                 {BRAND.name} was built around a simple idea: finding the right
                 fitness guidance should not feel complicated. Instead of
                 searching on your own, you share your goals, location, and
                 preferred timings, and our team helps coordinate the next step.
               </p>
 
-              <p className="mt-5 max-w-xl text-sm leading-7 text-white/65 sm:text-base sm:leading-8">
+              <p className="mt-5 max-w-xl text-sm leading-7 text-slate-600 sm:text-base sm:leading-8">
                 We focus on in-home demos so you can experience personalized
                 training in your own space before deciding whether to continue.
               </p>
@@ -73,22 +74,26 @@ export default function OurStoryDetail() {
 
           {/* Right: image-background cards */}
           <Reveal delay={120}>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="relative grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* Slowly turning star peeking out from behind the top-right card (lg and up) */}
+              <SpinStar className="-right-10 -top-12 hidden lg:block" />
+
               {principles.map((item) => (
                 <div
                   key={item.title}
-                  className="group relative min-h-[220px] overflow-hidden rounded-2xl border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/30"
+                  className="group relative min-h-[220px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-900/10 transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-900/15"
                 >
                   {/* Background image */}
                   <PackageImage
                     src={item.image}
                     alt={item.alt}
                     width={800}
+                    sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                     className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                   />
 
-                  {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#070d17] via-[#070d17]/50 to-[#070d17]/30" />
+                  {/* Dark fade so the white text stays readable on any photo */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-slate-900/10" />
 
                   {/* Content */}
                   <div className="relative flex h-full flex-col justify-end p-5 sm:p-6">
@@ -96,7 +101,7 @@ export default function OurStoryDetail() {
                       {item.title}
                     </h3>
 
-                    <p className="mt-2 text-sm leading-6 text-white/70">
+                    <p className="mt-2 text-sm leading-6 text-white/80">
                       {item.description}
                     </p>
                   </div>

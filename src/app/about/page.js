@@ -14,11 +14,10 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="bg-[#070d17] text-white">
+    <main className="bg-[#e6e8f2] text-slate-900">
       <AboutHero />
       <OurStoryDetail />
       <WhatWeDo />
-      
       <ServicePromise />
       <WhoItsFor />
       <AboutFaqPreview />

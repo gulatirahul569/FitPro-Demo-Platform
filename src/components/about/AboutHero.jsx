@@ -7,7 +7,7 @@ import PackageImage from "@/components/packages/PackageImage";
 
 export default function AboutHero() {
   return (
-    <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#070d17] text-white sm:min-h-screen">
+    <section className="relative isolate min-h-[100svh] overflow-hidden bg-[#e6e8f2] text-slate-900 sm:min-h-screen">
       {/* ================= BACKGROUND IMAGE ================= */}
       <div className="absolute inset-0 -z-10">
         {/* Mobile background */}
@@ -15,24 +15,24 @@ export default function AboutHero() {
           src="https://images.pexels.com/photos/39134627/pexels-photo-39134627.jpeg"
           alt="Fitness training at home"
           width={900}
+          sizes="100vw"
           priority
           className="block h-full w-full object-cover object-center sm:hidden"
         />
 
         {/* Desktop background */}
         <PackageImage
-          src="https://images.pexels.com/photos/7261839/pexels-photo-7261839.jpeg"
+          src="https://images.pexels.com/photos/3838705/pexels-photo-3838705.jpeg"
           alt="Fitness training at home"
           width={1600}
+          sizes="100vw"
           priority
-          className="hidden h-full w-full object-cover object-center sm:block"
+          className="hidden h-full w-full object-cover  sm:block"
         />
 
-        {/* Dark overlay (flat on mobile so the text stays readable) */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/30 max-sm:bg-black/70 max-sm:bg-none" />
+        {/* Lavender overlay (flat on mobile so the text stays readable) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/40 to-black/20 max-sm:bg-[#e6e8f2]/35 max-sm:bg-none" />
 
-        {/* Bottom fade */}
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#070d17] to-transparent" />
       </div>
 
       {/* ================= HERO CONTENT ================= */}
@@ -41,12 +41,12 @@ export default function AboutHero() {
         <div className="mx-auto w-full max-w-sm text-left sm:mx-0 sm:max-w-2xl md:mt-16">
           {/* Badge */}
           <div
-            className="animate-fade-up mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3.5 py-2 text-[11px] font-medium text-white shadow-sm sm:mb-6 sm:px-4 sm:text-sm"
+            className="animate-fade-up mb-8 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/90 px-3.5 py-2 text-[11px] font-medium text-slate-800 shadow-sm sm:mb-6 sm:px-4 sm:text-sm"
             style={{ animationDelay: "0.1s" }}
           >
             <span className="relative flex h-2 w-2 shrink-0">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/60 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-slate-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-slate-500" />
             </span>
 
             About {BRAND.name}
@@ -61,12 +61,12 @@ export default function AboutHero() {
             <br />
             COORDINATED
             <br />
-            FOR YOUR <span className="text-white/30">HOME.</span>
+            FOR YOUR <span className="text-slate-700">HOME.</span>
           </h1>
 
           {/* Description */}
           <p
-            className="animate-fade-up mt-8 max-w-xl text-[14px] leading-[1.7] text-white/80 sm:mt-7 sm:text-lg sm:leading-7"
+            className="animate-fade-up mt-8 max-w-xl text-[14px] leading-[1.7] text-slate-100 sm:mt-7 sm:text-lg sm:leading-7"
             style={{ animationDelay: "0.4s" }}
           >
             {BRAND.name} helps you request an in-home fitness demo. Share your
@@ -81,18 +81,23 @@ export default function AboutHero() {
           >
             <Link
               href="/book-demo"
-              className="group inline-flex w-full items-center justify-center gap-3 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-black transition-all duration-300 hover:-translate-y-1 hover:bg-gray-100 hover:shadow-xl active:scale-[0.98] sm:w-auto sm:px-7 sm:py-4"
+              className="group relative inline-flex w-full items-center justify-center gap-3 overflow-hidden rounded-full bg-slate-900 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition-all duration-300 hover:-translate-y-1 hover:bg-slate-800 hover:shadow-xl active:scale-[0.98] sm:w-auto sm:px-7 sm:py-4"
             >
-              Book a Demo
+              {/* Shine sweep on hover */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 -left-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-[400%]"
+              />
+              <span className="relative">Book a Demo</span>
               <ArrowRight
                 size={18}
-                className="transition-transform duration-300 group-hover:translate-x-1"
+                className="relative transition-transform duration-300 group-hover:translate-x-1"
               />
             </Link>
 
             <Link
               href="/contact"
-              className="inline-flex w-full items-center justify-center gap-3 rounded-full border border-white/30 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white/10 active:scale-[0.98] sm:w-auto sm:px-7 sm:py-4"
+              className="inline-flex w-full items-center justify-center gap-3 rounded-full border border-slate-300 bg-white/80 px-6 py-3.5 text-sm font-bold text-slate-900 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 hover:bg-white hover:shadow-md active:scale-[0.98] sm:w-auto sm:px-7 sm:py-4"
             >
               Contact Us
             </Link>
@@ -102,7 +107,7 @@ export default function AboutHero() {
         </div>
 
         {/* Desktop scroll indicator */}
-        <div className="animate-soft-bounce absolute bottom-8 right-8 hidden flex-col items-center gap-2 text-white/50 lg:flex">
+        <div className="animate-soft-bounce absolute bottom-8 right-8 hidden flex-col items-center gap-2 text-slate-500 lg:flex">
           <span className="text-xs uppercase tracking-widest [writing-mode:vertical-rl]">
             Scroll
           </span>

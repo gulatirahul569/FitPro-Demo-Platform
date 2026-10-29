@@ -7,11 +7,11 @@ export default function Reveal({ children, delay = 0, className = "" }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
+    const el = ref.current;
+    if (!el) return;
 
-    // Never leave content hidden if the browser can't observe it.
-    if (typeof IntersectionObserver === "undefined") {
+    // Skip animation for users who prefer reduced motion
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setVisible(true);
       return;
     }
@@ -20,40 +20,23 @@ export default function Reveal({ children, delay = 0, className = "" }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
-          observer.disconnect();
+          observer.disconnect(); // animate once, then stop observing
         }
       },
-      // Start revealing before the section fully enters the viewport,
-      // giving images time to load and decode.
-      {
-        threshold: 0,
-        rootMargin: "0px 0px 20% 0px",
-      }
+      { threshold: 0.08, rootMargin: "0px 0px -60px 0px" }
     );
 
-    observer.observe(node);
-
-    // Safety net: reveal anyway so content is never stuck hidden.
-    const fallback = setTimeout(() => setVisible(true), 1500);
-
-    return () => {
-      clearTimeout(fallback);
-      observer.disconnect();
-    };
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   return (
     <div
       ref={ref}
-      className={[
-        "transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
-        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
-        className,
-      ].join(" ")}
-      style={{
-        transitionDelay: visible ? `${delay}ms` : "0ms",
-        willChange: visible ? "auto" : "transform, opacity",
-      }}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-all duration-700 ease-out will-change-[opacity,transform] ${
+        visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+      } ${className}`}
     >
       {children}
     </div>
