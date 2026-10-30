@@ -15,8 +15,8 @@ export const metadata = {
 const EMAIL = "support@fitpro.example";
 const COMPANY = "FitPro Fitness Pvt. Ltd.";
 const ADDRESS = {
-  street: "Sector 15",
-  city: "Panchkula",
+  street: "example",
+  city: "panchkula",
   region: "Haryana",
   country: "India",
 };
@@ -86,7 +86,7 @@ function mailto(email, subject) {
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-[#070d17] pt-24 text-white md:pt-32">
+    <main className="min-h-screen bg-[#070d17] pt-24 text-slate-900 md:pt-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -96,23 +96,23 @@ export default function ContactPage() {
       <div className="mx-auto max-w-7xl px-6 pb-24 md:px-12">
         {/* ================= HERO ================= */}
         <Reveal>
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#0f1a2b] via-[#0b1424] to-[#070d17] p-8 sm:p-12">
-            <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
-            <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-[#e6e8f2] p-8 shadow-xl shadow-slate-900/5 sm:p-12">
+            <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[#e6e8f2] blur-3xl" />
+            <div className="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-[#e6e8f2] blur-3xl" />
 
 
             <div className="relative">
-              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-white/50">
+              <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
                 Get in touch
               </p>
 
 
-              <h1 className="max-w-3xl text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
+              <h1 className="max-w-3xl text-3xl font-black leading-tight text-slate-900 sm:text-4xl md:text-5xl">
                 Contact Us
               </h1>
 
 
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65 sm:text-base">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
                 Have a question or feedback? Choose the topic that fits best
                 and send us an email. We will respond as soon as possible.
               </p>
@@ -121,7 +121,7 @@ export default function ContactPage() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <a
                   href={`mailto:${EMAIL}`}
-                  className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-black transition-all duration-300 hover:-translate-y-1 hover:bg-gray-100"
+                  className="group inline-flex items-center gap-2 rounded-full bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition-all duration-300 hover:-translate-y-1 hover:bg-slate-800"
                 >
                   <Mail size={16} />
                   Email Support
@@ -134,7 +134,7 @@ export default function ContactPage() {
 
                 <Link
                   href="/book-demo"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 px-6 py-3 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white/10"
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-[#e6e8f2] px-6 py-3 text-sm font-bold text-slate-900 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 hover:shadow-md"
                 >
                   Book a Demo
                   <ArrowRight size={16} />
@@ -151,26 +151,26 @@ export default function ContactPage() {
             <Reveal key={topic.title} delay={index * 70}>
               <a
                 href={mailto(topic.email, topic.subject)}
-                className="group flex h-full flex-col justify-between rounded-3xl border border-white/10 bg-[#0f1a2b] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-white/30 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-white sm:p-7"
+                className="group flex h-full flex-col justify-between rounded-3xl border border-slate-200 bg-[#e6e8f2] p-6 transition-all duration-300 hover:-translate-y-1 hover:border-slate-400 hover:shadow-xl hover:shadow-slate-900/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 sm:p-7"
               >
                 <div>
-                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-[#e6e8f2] text-slate-900 transition-colors duration-300 group-hover:border-slate-900 group-hover:bg-slate-900 group-hover:text-white">
                     <Mail size={18} />
                   </div>
 
 
-                  <h2 className="text-lg font-bold text-white">
+                  <h2 className="text-lg font-bold text-slate-900">
                     {topic.title}
                   </h2>
 
 
-                  <p className="mt-2 text-sm leading-6 text-white/60">
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
                     {topic.description}
                   </p>
                 </div>
 
 
-                <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-white/80 transition-colors group-hover:text-white">
+                <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-slate-700 transition-colors group-hover:text-slate-900">
                   Email us
                   <ArrowRight
                     size={16}
@@ -185,10 +185,10 @@ export default function ContactPage() {
 
         {/* ================= CONTACT DETAILS ================= */}
         <Reveal delay={120}>
-          <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-[#0f1a2b]">
-            <div className="grid gap-px bg-white/10 md:grid-cols-3">
-              <div className="bg-[#0f1a2b] p-6 md:p-8">
-                <p className="flex items-center gap-2 text-sm font-bold text-white">
+          <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-[#e6e8f2]">
+            <div className="grid gap-px bg-slate-200 md:grid-cols-3">
+              <div className="bg-[#e6e8f2] p-6 md:p-8">
+                <p className="flex items-center gap-2 text-sm font-bold text-slate-900">
                   <Mail size={16} />
                   Email
                 </p>
@@ -196,21 +196,21 @@ export default function ContactPage() {
 
                 <a
                   href={`mailto:${EMAIL}`}
-                  className="mt-3 block break-all text-sm text-white/65 underline-offset-4 transition-colors hover:text-white hover:underline"
+                  className="mt-3 block break-all text-sm text-slate-600 underline-offset-4 transition-colors hover:text-slate-900 hover:underline"
                 >
                   {EMAIL}
                 </a>
               </div>
 
 
-              <div className="bg-[#0f1a2b] p-6 md:p-8">
-                <p className="flex items-center gap-2 text-sm font-bold text-white">
+              <div className="bg-[#e6e8f2] p-6 md:p-8">
+                <p className="flex items-center gap-2 text-sm font-bold text-slate-900">
                   <MapPin size={16} />
                   Office
                 </p>
 
 
-                <address className="mt-3 text-sm not-italic leading-6 text-white/65">
+                <address className="mt-3 text-sm not-italic leading-6 text-slate-600">
                   {COMPANY}
                   <br />
                   {ADDRESS.street}, {ADDRESS.city}
@@ -220,14 +220,14 @@ export default function ContactPage() {
               </div>
 
 
-              <div className="bg-[#0f1a2b] p-6 md:p-8">
-                <p className="flex items-center gap-2 text-sm font-bold text-white">
+              <div className="bg-[#e6e8f2] p-6 md:p-8">
+                <p className="flex items-center gap-2 text-sm font-bold text-slate-900">
                   <Clock size={16} />
                   Response time
                 </p>
 
 
-                <p className="mt-3 text-sm leading-6 text-white/65">
+                <p className="mt-3 text-sm leading-6 text-slate-600">
                   We aim to reply within 2 business days. Privacy and data
                   requests are acknowledged within 48 hours.
                 </p>
@@ -235,11 +235,11 @@ export default function ContactPage() {
             </div>
 
 
-            <div className="flex items-start gap-3 border-t border-white/10 bg-[#070d17] p-6 md:p-8">
-              <ShieldCheck size={18} className="mt-0.5 shrink-0 text-white/60" />
+            <div className="flex items-start gap-3 border-t border-slate-200 bg-[#e6e8f2] p-6 md:p-8">
+              <ShieldCheck size={18} className="mt-0.5 shrink-0 text-slate-500" />
 
 
-              <p className="text-xs leading-5 text-white/50 sm:text-sm">
+              <p className="text-xs leading-5 text-slate-600 sm:text-sm">
                 For partnership queries, mention your use case in the subject
                 line. Please do not send sensitive personal or health
                 information by email.
@@ -251,14 +251,14 @@ export default function ContactPage() {
 
         {/* ================= DEMO CTA ================= */}
         <Reveal delay={150}>
-          <div className="mt-6 flex flex-col items-start justify-between gap-5 rounded-3xl border border-white/10 bg-gradient-to-br from-[#0f1a2b] to-black p-7 sm:flex-row sm:items-center md:p-9">
+          <div className="mt-6 flex flex-col items-start justify-between gap-5 rounded-3xl bg-slate-900 p-7 shadow-xl shadow-slate-900/20 sm:flex-row sm:items-center md:p-9">
             <div>
               <h2 className="text-xl font-bold text-white sm:text-2xl">
                 Want to try a session first?
               </h2>
 
 
-              <p className="mt-2 max-w-xl text-sm leading-6 text-white/60">
+              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-300">
                 Request a demo and our team will contact you to check
                 availability and agree on a suitable time.
               </p>
@@ -267,7 +267,7 @@ export default function ContactPage() {
 
             <Link
               href="/book-demo"
-              className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-bold text-black transition-all duration-300 hover:-translate-y-1 hover:bg-gray-100 hover:shadow-xl active:scale-[0.98]"
+              className="group inline-flex shrink-0 items-center gap-2 rounded-full bg-[#e6e8f2] px-7 py-3.5 text-sm font-bold text-slate-900 transition-all duration-300 hover:-translate-y-1 hover:bg-slate-100 hover:shadow-xl active:scale-[0.98]"
             >
               Book a Demo
               <ArrowRight
@@ -276,37 +276,6 @@ export default function ContactPage() {
               />
             </Link>
           </div>
-        </Reveal>
-
-
-        {/* ================= LEGAL LINKS ================= */}
-        <Reveal delay={180}>
-          <nav
-            aria-label="Legal pages"
-            className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-6 text-sm font-semibold"
-          >
-            <Link href="/privacy" className="text-white/70 transition-colors hover:text-white">
-              Privacy Policy
-            </Link>
-
-
-            <Link href="/terms" className="text-white/70 transition-colors hover:text-white">
-              Terms of Service
-            </Link>
-
-
-            <Link href="/cookies" className="text-white/70 transition-colors hover:text-white">
-              Cookie Policy
-            </Link>
-          </nav>
-
-
-          <Link
-            href="/"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white/70 transition-colors hover:text-white"
-          >
-            ← Back to home
-          </Link>
         </Reveal>
       </div>
     </main>
