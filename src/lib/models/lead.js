@@ -7,8 +7,12 @@ import { LEAD_STATUSES } from "@/lib/leadOptions";
 //   _id, leadId: "FP-260915-A1B2C3",
 //   name, phone (10 digits), email, address, pinCode,
 //   goal, notes,
+//   packageSlug, packageName, packageType,
 //   slots: [{ priority: 1|2|3, date: "2026-09-20", time: "17:00" }],
 //   consent, consentAt, source, campaign, medium,
+//   paymentStatus: "pending" | "paid"   (old leads have none = visible),
+//   amount (paise), currency: "INR",
+//   razorpayOrderId, razorpayPaymentId, paidAt,
 //   status: "New Request",
 //   assignedTo: userId | null, assignedToName: string | null,
 //   nextFollowUpAt: Date | null,
@@ -27,6 +31,7 @@ async function ensureIndexes(db) {
   await col.createIndex({ phone: 1 });
   await col.createIndex({ email: 1 });
   await col.createIndex({ status: 1, createdAt: -1 });
+  await col.createIndex({ razorpayOrderId: 1 }, { sparse: true });
   indexesReady = true;
 }
 
@@ -44,9 +49,13 @@ export async function createLead(data) {
   await ensureIndexes(db);
   const col = db.collection("leads");
 
-  // Same phone or email submitting again: flag it for sales, never block the customer
+  // Same phone or email submitting again: flag it for sales, never block the customer.
+  // Unpaid attempts are ignored so they don't make a later paid lead look like a duplicate.
   const earlier = await col.findOne(
-    { $or: [{ phone: data.phone }, { email: data.email }] },
+    {
+      $or: [{ phone: data.phone }, { email: data.email }],
+      paymentStatus: { $ne: "pending" },
+    },
     { projection: { leadId: 1 }, sort: { createdAt: 1 } }
   );
 
@@ -78,11 +87,58 @@ export async function createLead(data) {
 }
 
 /* ============================================================
+   PAYMENT FUNCTIONS
+============================================================ */
+
+export async function attachOrderToLead(leadId, orderId) {
+  const db = await getDb();
+  await db
+    .collection("leads")
+    .updateOne(
+      { leadId },
+      { $set: { razorpayOrderId: orderId, updatedAt: new Date() } }
+    );
+}
+
+// Atomic + idempotent: returns the lead only on the FIRST confirmation,
+// null if it was already paid or the order is unknown.
+export async function markLeadPaid({ orderId, paymentId }) {
+  const db = await getDb();
+  const now = new Date();
+
+  const result = await db.collection("leads").findOneAndUpdate(
+    { razorpayOrderId: orderId, paymentStatus: { $ne: "paid" } },
+    {
+      $set: {
+        paymentStatus: "paid",
+        razorpayPaymentId: paymentId,
+        paidAt: now,
+        updatedAt: now,
+      },
+      $push: {
+        callNotes: {
+          text: `Online payment received (${paymentId}).`,
+          by: "system",
+          byName: "System",
+          at: now,
+        },
+      },
+    },
+    { returnDocument: "after" }
+  );
+  return plain(result);
+}
+
+/* ============================================================
    SALES FUNCTIONS
 ============================================================ */
 
 // Turns Dates and ObjectIds into plain strings so pages can pass them around
 const plain = (doc) => (doc ? JSON.parse(JSON.stringify(doc)) : null);
+
+// Hides unpaid (abandoned checkout) leads from sales.
+// Old leads have no paymentStatus, so $ne keeps them visible.
+const VISIBLE = { paymentStatus: { $ne: "pending" } };
 
 const istToday = () =>
   new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
@@ -95,14 +151,18 @@ export async function getLeadStats() {
 
   const [total, newLeads, followUpsDue, pendingDemos, confirmedDemos] =
     await Promise.all([
-      col.countDocuments({}),
-      col.countDocuments({ status: "New Request" }),
+      col.countDocuments({ ...VISIBLE }),
+      col.countDocuments({ ...VISIBLE, status: "New Request" }),
       col.countDocuments({
+        ...VISIBLE,
         nextFollowUpAt: { $lte: endOfTodayIST() },
         status: { $ne: "Converted / Closed" },
       }),
-      col.countDocuments({ status: { $in: ["Demo Pending", "Pending Payment"] } }),
-      col.countDocuments({ status: "Demo Confirmed" }),
+      col.countDocuments({
+        ...VISIBLE,
+        status: { $in: ["Demo Pending", "Pending Payment"] },
+      }),
+      col.countDocuments({ ...VISIBLE, status: "Demo Confirmed" }),
     ]);
 
   return { total, newLeads, followUpsDue, pendingDemos, confirmedDemos };
@@ -111,7 +171,7 @@ export async function getLeadStats() {
 // status can be a pipeline status, or "due" for follow-ups due today or overdue
 export async function listLeads({ status = "", q = "", limit = 100 } = {}) {
   const db = await getDb();
-  const filter = {};
+  const filter = { ...VISIBLE };
 
   if (status === "due") {
     filter.nextFollowUpAt = { $lte: endOfTodayIST() };

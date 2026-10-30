@@ -96,8 +96,8 @@ export default function BottomNav() {
   // Keep Book Demo in the center whenever it is available.
   // Five tabs: Home | Packages | Book Demo | About | Login/Dashboard
   const tabs = showBookDemo
-    ? [homeTab, packagesTab, demoTab, aboutTab, profileTab]
-    : [homeTab, packagesTab, aboutTab, profileTab];
+    ? [homeTab,  aboutTab, demoTab, packagesTab, profileTab]
+    : [homeTab, aboutTab, packagesTab, profileTab];
 
   // Use optional feature tabs only if there is room.
   const finalTabs =

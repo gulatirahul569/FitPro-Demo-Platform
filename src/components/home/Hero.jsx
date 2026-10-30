@@ -20,7 +20,7 @@ export default function Hero() {
         <div className="animate-hero-zoom absolute inset-0">
           {/* Mobile background */}
           <PackageImage
-            src="https://images.pexels.com/photos/17273480/pexels-photo-17273480.jpeg"
+            src="https://images.pexels.com/photos/33048831/pexels-photo-33048831.jpeg"
             alt="Fitness trainer working out"
             width={900}
             sizes="100vw"
@@ -31,7 +31,6 @@ export default function Hero() {
           {/* Desktop background */}
           <PackageImage
             src="https://images.pexels.com/photos/7312372/pexels-photo-7312372.jpeg"
-            // src="https://images.pexels.com/photos/17572135/pexels-photo-17572135.jpeg"
             alt="Fitness trainer working out"
             width={1600}
             sizes="100vw"
@@ -72,7 +71,7 @@ export default function Hero() {
             JOURNEY
             <br />
             STARTS{" "}
-            <span className="bg-slate-600 bg-clip-text text-transparent">
+            <span className="bg-orange-500 bg-clip-text text-transparent">
               HERE.
             </span>
           </h1>
@@ -124,7 +123,7 @@ export default function Hero() {
                 className="animate-fade-up flex items-center gap-2"
                 style={{ animationDelay: `${0.7 + i * 0.12}s` }}
               >
-                <CheckCircle2 size={17} className="shrink-0 text-orange-600" />
+                <CheckCircle2 size={17} className="shrink-0 text-orange-500" />
                 {point}
               </div>
             ))}

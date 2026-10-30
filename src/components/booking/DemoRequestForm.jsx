@@ -16,20 +16,21 @@ import { FITNESS_GOALS } from "@/lib/leadOptions";
 import { formatPrice } from "@/lib/packages";
 import { validateSlots } from "@/lib/validateSlots";
 
+// Light theme to match the rest of the site (page bg #e6e8f2, white cards, slate-900 accents).
 // Mobile-first sizing (below lg); lg: values match the original desktop design.
 // text-base on mobile also stops iOS from zooming when an input is focused.
 const inputBase = (hasError) =>
-  `w-full rounded-lg border bg-slate-900 text-white placeholder:text-slate-500 outline-none transition focus:ring-2 [color-scheme:dark] ${
+  `w-full rounded-lg border bg-white text-slate-900 placeholder:text-slate-400 outline-none transition focus:ring-2 ${
     hasError
-      ? "border-red-400/70 focus:border-red-400 focus:ring-red-400/20"
-      : "border-slate-700 focus:border-gray-500 focus:ring-gray-500/20"
+      ? "border-red-400 focus:border-red-500 focus:ring-red-400/20"
+      : "border-slate-300 focus:border-slate-900 focus:ring-slate-900/10"
   }`;
 
 const inputClass = (hasError = false) =>
   `${inputBase(hasError)} px-4 py-2.5 text-base lg:py-3 lg:text-sm`;
 const slotInputClass = `${inputBase(false)} min-w-0 px-3 py-2.5 text-base sm:px-4 lg:py-3 lg:text-sm`;
 const iconInputClass = (hasError = false) => `${inputClass(hasError)} pl-11`;
-const labelClass = "mb-1.5 block text-sm font-medium text-slate-200 lg:mb-2";
+const labelClass = "mb-1.5 block text-sm font-medium text-slate-800 lg:mb-2";
 const SLOT_LABELS = ["First choice *", "Second choice", "Third choice"];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -64,6 +65,8 @@ function validateDetails(form) {
   else if (address.length < 6)
     errors.address = "Please enter your area, city and PIN code.";
 
+  if (!form.packageSlug) errors.packageSlug = "Please choose a package.";
+
   if (!form.goal) errors.goal = "Please choose a fitness goal.";
 
   if (!form.consent) errors.consent = "Please accept this to continue.";
@@ -71,10 +74,22 @@ function validateDetails(form) {
   return errors;
 }
 
+// Loads Razorpay Checkout once, on demand.
+function loadRazorpay() {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && window.Razorpay) return resolve(true);
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = () => resolve(true);
+    s.onerror = () => resolve(false);
+    document.body.appendChild(s);
+  });
+}
+
 function FieldError({ message }) {
   if (!message) return null;
   return (
-    <p role="alert" className="mt-1.5 text-xs leading-5 text-red-300">
+    <p role="alert" className="mt-1.5 text-xs leading-5 text-red-600">
       {message}
     </p>
   );
@@ -83,9 +98,9 @@ function FieldError({ message }) {
 function SectionHeading({ title, description }) {
   return (
     <div className="mb-4 lg:mb-5">
-      <h3 className="text-base font-semibold text-white">{title}</h3>
+      <h3 className="text-base font-semibold text-slate-900">{title}</h3>
       {description && (
-        <p className="mt-1 text-[13px] leading-5 text-slate-400 lg:text-sm lg:leading-6">
+        <p className="mt-1 text-[13px] leading-5 text-slate-500 lg:text-sm lg:leading-6">
           {description}
         </p>
       )}
@@ -128,6 +143,8 @@ export default function DemoRequestForm({
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const today = new Date().toLocaleDateString("en-CA");
+
+  const selectedPackage = packages.find((p) => p.slug === form.packageSlug);
 
   const setField = (key) => (e) => {
     setForm((current) => ({
@@ -175,25 +192,68 @@ export default function DemoRequestForm({
 
     setSubmitting(true);
 
-    // Existing backend connection — unchanged.
     try {
+      // 1. Save the request (as unpaid) and get a Razorpay order back.
       const res = await fetch("/api/demo-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, slots, source, medium, campaign }),
       });
-
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.error || "Something went wrong. Please try again.");
+      if (!res.ok || !data.orderId) {
+        setError(data.error || "Could not start payment. Please try again.");
         setSubmitting(false);
         return;
       }
 
-      router.push(
-        `/demo-request-success?id=${encodeURIComponent(data.leadId)}`,
-      );
+      // 2. Load Razorpay Checkout.
+      const loaded = await loadRazorpay();
+      if (!loaded) {
+        setError(
+          "Could not load the payment window. Please check your connection and try again.",
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      // 3. Open the payment window.
+      const rzp = new window.Razorpay({
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency,
+        order_id: data.orderId,
+        name: BRAND.name,
+        description: selectedPackage?.name || "In-home fitness demo",
+        prefill: {
+          name: form.name.trim(),
+          email: form.email.trim(),
+          contact: normalizePhone(form.phone),
+        },
+        theme: { color: "#0f172a" },
+        handler: async (response) => {
+          // Payment is already done here. Verification confirms it on our side;
+          // the webhook covers us if this call fails.
+          try {
+            await fetch("/api/demo-requests/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(response),
+            });
+          } catch {}
+          router.push(
+            `/demo-request-success?id=${encodeURIComponent(data.leadId)}`,
+          );
+        },
+        modal: { ondismiss: () => setSubmitting(false) },
+      });
+
+      rzp.on("payment.failed", () => {
+        setError("Payment failed. Please try again.");
+        setSubmitting(false);
+      });
+
+      rzp.open();
     } catch {
       setError("Network error. Please check your connection and try again.");
       setSubmitting(false);
@@ -201,36 +261,36 @@ export default function DemoRequestForm({
   }
 
   return (
-    <div className="mt-4 overflow-visible rounded-xl border border-slate-700/80 bg-slate-950 shadow-xl shadow-black/20 lg:mt-8 lg:rounded-2xl">
+    <div className="mt-4 overflow-visible rounded-xl border border-slate-200 bg-white shadow-xl shadow-slate-900/10 lg:mt-8 lg:rounded-2xl">
       <div className="grid items-start lg:grid-cols-[0.8fr_1.2fr]">
         {/* Info panel: hidden on mobile/tablet, visible and sticky on desktop (lg and up). */}
-        <aside className="hidden border-slate-800 bg-slate-900/70 p-9 lg:sticky lg:top-6 lg:block lg:self-start lg:border-r">
+        <aside className="hidden border-slate-200 bg-[#f3f4fa] p-9 lg:sticky lg:top-6 lg:block lg:self-start lg:rounded-l-2xl lg:border-r">
           <div className="flex items-center gap-5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-400/10 text-gray-300">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-white">
               <Dumbbell size={22} />
             </div>
-            <p className="text-sm font-medium text-gray-300">
+            <p className="text-sm font-medium text-slate-600">
               In-home fitness demo
             </p>
           </div>
-          <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight text-white">
+          <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight text-slate-900">
             Let’s find a time that works for you.
           </h2>
-          <p className="mt-4 text-sm leading-7 text-slate-400">
+          <p className="mt-4 text-sm leading-7 text-slate-600">
             Share a few details about yourself and your fitness goals. Our team
             will get in touch to discuss trainer availability and arrange your
             demo.
           </p>
 
-          <div className="my-7 border-t border-slate-800" />
+          <div className="my-7 border-t border-slate-200" />
           <div className="space-y-5">
             <div className="flex gap-3">
-              <Dumbbell size={19} className="mt-0.5 shrink-0 text-gray-300" />
+              <Dumbbell size={19} className="mt-0.5 shrink-0 text-slate-700" />
               <div>
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm font-medium text-slate-900">
                   Built around your goals
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-400">
+                <p className="mt-1 text-sm leading-6 text-slate-600">
                   Tell us what you’re working towards so we can understand what
                   kind of support you need.
                 </p>
@@ -239,39 +299,39 @@ export default function DemoRequestForm({
             <div className="flex gap-3">
               <CalendarDays
                 size={19}
-                className="mt-0.5 shrink-0 text-gray-300"
+                className="mt-0.5 shrink-0 text-slate-700"
               />
               <div>
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm font-medium text-slate-900">
                   Your preferred schedule
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-400">
+                <p className="mt-1 text-sm leading-6 text-slate-600">
                   Add up to three date and time options that suit you. Our team
                   will confirm availability with you.
                 </p>
               </div>
             </div>
             <div className="flex gap-3">
-              <MapPin size={19} className="mt-0.5 shrink-0 text-gray-300" />
+              <MapPin size={19} className="mt-0.5 shrink-0 text-slate-700" />
               <div>
-                <p className="text-sm font-medium text-white">
+                <p className="text-sm font-medium text-slate-900">
                   Trainer availability near you
                 </p>
-                <p className="mt-1 text-sm leading-6 text-slate-400">
+                <p className="mt-1 text-sm leading-6 text-slate-600">
                   We’ll use your area to check whether a trainer is available
                   nearby.
                 </p>
               </div>
             </div>
           </div>
-          <p className="mt-8 rounded-lg border border-slate-800 bg-slate-950/70 p-4 text-sm leading-6 text-slate-300">
-            <span className="font-medium text-white">
-              No payment is taken now.
+          <p className="mt-8 rounded-lg border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-700">
+            <span className="font-medium text-slate-900">
+              Secure online payment.
             </span>{" "}
-            If a demo booking fee applies, our team will confirm the amount with
-            you before you pay.
+            Your package amount is paid when you submit, which confirms your
+            request. If we can’t arrange a demo for you, you’ll be refunded.
           </p>
-          <p className="mt-4 text-sm leading-6 text-slate-400">
+          <p className="mt-4 text-sm leading-6 text-slate-600">
             We’ll contact you to discuss availability, answer any questions, and
             confirm the arrangements before your demo.
           </p>
@@ -280,11 +340,12 @@ export default function DemoRequestForm({
         {/* The form remains in normal page flow and scrolls while the left panel sticks on desktop. */}
         <div className="min-w-0 p-4 sm:p-6 lg:p-9">
           <div className="mb-5 lg:mb-8">
-            <h2 className="text-xl font-semibold tracking-tight text-white lg:text-2xl">
+            <h2 className="text-xl font-semibold tracking-tight text-slate-900 lg:text-2xl">
               Request a demo
             </h2>
-            <p className="mt-1 text-[13px] leading-5 text-slate-400 lg:mt-2 lg:text-sm lg:leading-6">
-              Fill in the form and we’ll contact you to take it from there.
+            <p className="mt-1 text-[13px] leading-5 text-slate-500 lg:mt-2 lg:text-sm lg:leading-6">
+              Fill in the form, pay securely online, and we’ll contact you to
+              take it from there.
             </p>
           </div>
 
@@ -313,7 +374,7 @@ export default function DemoRequestForm({
                   <div className="relative">
                     <User
                       size={17}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                     />
                     <input
                       id="field-name"
@@ -334,7 +395,7 @@ export default function DemoRequestForm({
                   <div className="relative">
                     <Phone
                       size={17}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                     />
                     <input
                       id="field-phone"
@@ -357,7 +418,7 @@ export default function DemoRequestForm({
                   <div className="relative">
                     <Mail
                       size={17}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                     />
                     <input
                       id="field-email"
@@ -379,7 +440,7 @@ export default function DemoRequestForm({
                   <div className="relative">
                     <MapPin
                       size={17}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
+                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
                     />
                     <input
                       id="field-address"
@@ -401,11 +462,12 @@ export default function DemoRequestForm({
                 </div>
                 <div className="sm:col-span-2">
                   <label htmlFor="field-packageSlug" className={labelClass}>
-                    Select a package
+                    Select a package *
                   </label>
                   <select
                     id="field-packageSlug"
-                    className={inputClass()}
+                    className={inputClass(Boolean(fieldErrors.packageSlug))}
+                    aria-invalid={Boolean(fieldErrors.packageSlug)}
                     value={form.packageSlug}
                     onChange={setField("packageSlug")}
                   >
@@ -431,6 +493,7 @@ export default function DemoRequestForm({
                       </optgroup>
                     )}
                   </select>
+                  <FieldError message={fieldErrors.packageSlug} />
                 </div>
                 <div className="sm:col-span-2">
                   <label htmlFor="field-goal" className={labelClass}>
@@ -455,7 +518,7 @@ export default function DemoRequestForm({
               </div>
             </section>
 
-            <section className="border-t border-slate-800 pt-5 lg:pt-7">
+            <section className="border-t border-slate-200 pt-5 lg:pt-7">
               <SectionHeading
                 title="When would you like your demo?"
                 description="First choice is required. Add up to two more, each on a different day. We’ll confirm the final time with you."
@@ -464,15 +527,15 @@ export default function DemoRequestForm({
                 {slots.map((slot, i) => (
                   <div
                     key={i}
-                    className="min-w-0 rounded-xl border border-slate-800 bg-slate-900/50 p-3 sm:p-4"
+                    className="min-w-0 rounded-xl border border-slate-200 bg-[#f3f4fa] p-3 sm:p-4"
                   >
-                    <p className="mb-2.5 text-sm font-medium text-white sm:mb-4">
+                    <p className="mb-2.5 text-sm font-medium text-slate-900 sm:mb-4">
                       {SLOT_LABELS[i]}
                     </p>
                     {/* Mobile: date and time sit side by side to save height. sm and up: stacked, as before. */}
                     <div className="grid grid-cols-2 gap-2.5 sm:block sm:space-y-3">
                       <div className="min-w-0">
-                        <label className="mb-1.5 flex items-center gap-2 text-xs text-slate-400 sm:mb-2">
+                        <label className="mb-1.5 flex items-center gap-2 text-xs text-slate-500 sm:mb-2">
                           <CalendarDays size={14} />
                           Date
                         </label>
@@ -485,7 +548,7 @@ export default function DemoRequestForm({
                         />
                       </div>
                       <div className="min-w-0">
-                        <label className="mb-1.5 flex items-center gap-2 text-xs text-slate-400 sm:mb-2">
+                        <label className="mb-1.5 flex items-center gap-2 text-xs text-slate-500 sm:mb-2">
                           <Clock3 size={14} />
                           Time
                         </label>
@@ -502,7 +565,7 @@ export default function DemoRequestForm({
               </div>
             </section>
 
-            <section className="border-t border-slate-800 pt-5 lg:pt-7">
+            <section className="border-t border-slate-200 pt-5 lg:pt-7">
               <SectionHeading
                 title="Anything else we should know?"
                 description="Optional — add any requests or details that may help us plan your demo."
@@ -520,25 +583,25 @@ export default function DemoRequestForm({
               />
             </section>
 
-            <section className="space-y-3.5 border-t border-slate-800 pt-5 lg:space-y-4 lg:pt-7">
+            <section className="space-y-3.5 border-t border-slate-200 pt-5 lg:space-y-4 lg:pt-7">
               <div>
                 <label
                   className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 lg:p-4 ${
                     fieldErrors.consent
-                      ? "border-red-400/70"
-                      : "border-slate-800"
+                      ? "border-red-400"
+                      : "border-slate-200"
                   }`}
                 >
                   <input
                     id="field-consent"
                     type="checkbox"
-                    className="mt-1 h-4 w-4 shrink-0 accent-gray-500"
+                    className="mt-1 h-4 w-4 shrink-0 accent-slate-900"
                     checked={form.consent}
                     onChange={setField("consent")}
                   />
-                  <span className="text-[13px] leading-5 text-slate-400 lg:text-sm lg:leading-6">
+                  <span className="text-[13px] leading-5 text-slate-600 lg:text-sm lg:leading-6">
                     I agree that{" "}
-                    <span className="font-medium text-slate-200">
+                    <span className="font-medium text-slate-900">
                       {BRAND.name}
                     </span>{" "}
                     may contact me by phone or email about this demo request
@@ -551,7 +614,7 @@ export default function DemoRequestForm({
               {error && (
                 <p
                   role="alert"
-                  className="rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm leading-6 text-red-300"
+                  className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm leading-6 text-red-700"
                 >
                   {error}
                 </p>
@@ -561,13 +624,17 @@ export default function DemoRequestForm({
                 type="button"
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="flex w-full items-center justify-center rounded-lg bg-gray-400 px-6 py-3 text-base font-semibold text-slate-950 transition-colors hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-60 lg:py-3.5 lg:text-sm"
+                className="flex w-full items-center justify-center rounded-full bg-slate-900 px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-slate-900/20 transition-all duration-300 hover:bg-slate-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 lg:py-4 lg:text-sm"
               >
-                {submitting ? "Submitting…" : "Send demo request"}
+                {submitting
+                  ? "Processing…"
+                  : selectedPackage
+                    ? `Pay ${formatPrice(selectedPackage.price)} & request demo`
+                    : "Pay & request demo"}
               </button>
               <p className="text-center text-xs leading-5 text-slate-500 lg:text-left">
-                Our team will contact you to discuss availability and next
-                steps.
+                Secure payment via Razorpay (UPI, cards, netbanking). Our team
+                will contact you to confirm your demo time.
               </p>
             </section>
           </div>

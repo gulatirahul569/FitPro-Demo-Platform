@@ -14,8 +14,10 @@ import {
   Loader2,
 } from "lucide-react";
 
+// The [&:-webkit-autofill] parts stop Chrome's autofill from painting a light-blue
+// background over the field, so the dark style and the left icon stay visible.
 const inputClass =
-  "w-full border border-white/10 bg-[#070d17] py-3 pl-11 pr-11 text-white placeholder:text-white/30 transition focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40";
+  "w-full border border-white/10 bg-[#070d17] py-3 pl-11 pr-11 text-white caret-white placeholder:text-white/30 transition focus:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 [&:-webkit-autofill]:[-webkit-text-fill-color:#fff] [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#070d17] [&:-webkit-autofill]:[transition:background-color_9999s_ease-in-out_0s]";
 
 const ROLE_HOME = {
   admin: "/admin/dashboard",
@@ -110,15 +112,15 @@ export default function LoginPage() {
     }
   };
 
-const handleGoogle = async () => {
-  setError("");
-  setGoogleLoading(true);
+  const handleGoogle = async () => {
+    setError("");
+    setGoogleLoading(true);
 
-  await signIn("google", {
-    callbackUrl: "/",
-    prompt: "select_account",
-  });
-};
+    await signIn("google", {
+      callbackUrl: "/",
+      prompt: "select_account",
+    });
+  };
 
   return (
     <section className="relative grid h-dvh overflow-hidden bg-[#070d17] text-white lg:grid-cols-[60%_40%]">
@@ -229,7 +231,7 @@ const handleGoogle = async () => {
               <div className="relative">
                 <Mail
                   size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/35"
+                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-white/50"
                 />
 
                 <input
@@ -258,7 +260,7 @@ const handleGoogle = async () => {
               <div className="relative">
                 <Lock
                   size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white/35"
+                  className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-white/50"
                 />
 
                 <input
@@ -277,7 +279,7 @@ const handleGoogle = async () => {
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-white/40 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  className="absolute right-3 top-1/2 z-10 -translate-y-1/2 p-1 text-white/40 transition hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>

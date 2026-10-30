@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { createLead } from "@/lib/models/lead";
+import { createLead, attachOrderToLead } from "@/lib/models/lead";
 import { getPackageBySlug } from "@/lib/models/package";
 import { FITNESS_GOALS } from "@/lib/leadOptions";
 import { validateSlots } from "@/lib/validateSlots";
+import { razorpay } from "@/lib/razorpay";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -66,16 +67,25 @@ export async function POST(request) {
       );
     }
 
-    // Package is optional, but if one is sent it must exist and be active.
-    let pkg = null;
-    if (packageSlug) {
-      pkg = await getPackageBySlug(packageSlug);
-      if (!pkg || !pkg.active) {
-        return NextResponse.json(
-          { error: "The selected package is no longer available. Please choose another." },
-          { status: 400 }
-        );
-      }
+    // Package is now REQUIRED because we take payment up front.
+    if (!packageSlug) {
+      return NextResponse.json({ error: "Please choose a package." }, { status: 400 });
+    }
+    const pkg = await getPackageBySlug(packageSlug);
+    if (!pkg || !pkg.active) {
+      return NextResponse.json(
+        { error: "The selected package is no longer available. Please choose another." },
+        { status: 400 }
+      );
+    }
+
+    // Amount in paise, always from the database, never from the browser.
+    const amount = Math.round(Number(pkg.price) * 100);
+    if (!Number.isInteger(amount) || amount <= 0) {
+      return NextResponse.json(
+        { error: "This package cannot be booked online." },
+        { status: 400 }
+      );
     }
 
     // Slots: first choice required, second and third optional (see validateSlots).
@@ -114,9 +124,13 @@ export async function POST(request) {
       notes,
       slots,
       // Taken from the database, never from the browser
-      packageSlug: pkg ? pkg.slug : "",
-      packageName: pkg ? pkg.name : "",
-      packageType: pkg ? pkg.type : "",
+      packageSlug: pkg.slug,
+      packageName: pkg.name,
+      packageType: pkg.type,
+      // Payment: stays "pending" (hidden from sales) until Razorpay confirms
+      paymentStatus: "pending",
+      amount, // paise
+      currency: "INR",
       consent: true,
       consentAt: new Date(),
       source: cleanTag(body.source) || "direct",
@@ -124,9 +138,27 @@ export async function POST(request) {
       campaign: cleanTag(body.campaign),
     });
 
-    // TODO (notifications step): email the sales team and send the customer an acknowledgment
+    // Create the Razorpay order and link it to the lead.
+    const order = await razorpay.orders.create({
+      amount,
+      currency: "INR",
+      receipt: leadId,
+      notes: { leadId },
+    });
+    await attachOrderToLead(leadId, order.id);
 
-    return NextResponse.json({ leadId }, { status: 201 });
+    // Team/customer notifications now fire only after payment is confirmed
+    // (see verify route and webhook).
+    return NextResponse.json(
+      {
+        leadId,
+        orderId: order.id,
+        amount,
+        currency: "INR",
+        keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Demo request error:", error);
     return NextResponse.json(

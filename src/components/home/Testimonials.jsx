@@ -153,7 +153,7 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="overflow-hidden bg-[#e6e8f2] py-24 md:py-28">
+    <section className="overflow-hidden bg-[#e6e8f2] py-12 md:py-28">
       <div className="mx-auto max-w-[1400px] px-6 md:px-10 lg:px-6">
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[390px_1fr] lg:gap-16">
           {/* Left content */}

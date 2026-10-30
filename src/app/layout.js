@@ -1,11 +1,12 @@
 import "./globals.css";
 import SessionWrapper from "@/components/providers/SessionWrapper";
 import Chrome from "@/components/layout/Chrome";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { BRAND } from "@/lib/brand";
 
 export const metadata = {
   title: {
-    default: `${BRAND.name} | Book a Free Home Fitness Demo`,
+    default: `${BRAND.name} | Book an In-Home Fitness Demo`,
     template: `%s | ${BRAND.name}`,
   },
   description:
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
         <SessionWrapper>
           <Chrome>{children}</Chrome>
         </SessionWrapper>
+        <WhatsAppButton />
       </body>
     </html>
   );

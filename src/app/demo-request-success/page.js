@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 
-export const metadata = { title: "Request Received" };
+export const metadata = { title: "Payment Received" };
 
 const steps = [
   "We review your details and look for a trainer available in your area at your preferred times, in the order you chose them.",
@@ -21,10 +21,10 @@ export default async function DemoRequestSuccessPage({ searchParams }) {
           <CheckCircle2 size={32} />
         </div>
 
-        <h1 className="mt-6 text-3xl font-black">Request Submitted!</h1>
+        <h1 className="mt-6 text-3xl font-black">Payment Received!</h1>
         <p className="mt-2 text-sm text-white/60">
-          Your payment is safe with us and your demo request has been
-          received. Our sales team will contact you within 24 hours.
+          Your payment was successful and your demo request has been received.
+          Our sales team will contact you within 24 hours.
         </p>
         {id && (
           <p className="mt-3 text-xs text-white/50">
